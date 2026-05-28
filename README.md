@@ -47,8 +47,8 @@ hs deck <deckcode>
 ```
 
 ```
-Class:  주술사 (SHAMAN)
-Format: 정규
+Class:  Shaman (SHAMAN)
+Format: Standard
 Dust:   15,760
 Cards:  30
 
@@ -59,9 +59,9 @@ Mana Curve
   ...
 
 Cards (30)
-  ×2  (1) 대지 충격 ·
-  ×2  (1) 진흙 핥짝이 ◇
-  ×2  (2) 전승지기 초 ★
+  ×2  (1) Earth Shock ·
+  ×2  (1) Murloc Tidecaller ◇
+  ×2  (2) Lorekeeper Polkelt ★
   ...
 ```
 
@@ -72,7 +72,7 @@ Rarity glyphs: `★` Legendary · `◆` Epic · `◇` Rare · `·` Common.
 ```bash
 hs card 1124              # by dbfId
 hs card CS2_151           # by card ID
-hs card --search "질리악스"
+hs card --search "Zilliax"
 hs card --search "fire" --class MAGE --cost 3
 ```
 
@@ -91,7 +91,7 @@ Add `-f json` to any command for raw structured data:
 
 ```bash
 hs deck <code> -f json | jq '.cards | length'
-hs card --search "리치 왕" -f json | jq '.[].dbfId'
+hs card --search "Lich King" -f json | jq '.[].dbfId'
 ```
 
 ## Agent integration
