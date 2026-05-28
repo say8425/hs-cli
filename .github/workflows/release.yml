@@ -173,3 +173,95 @@ jobs:
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: npm publish --access public --provenance
+
+  update-homebrew-tap:
+    name: bump homebrew tap
+    needs: [release-please, attach-binaries]
+    if: |
+      always() &&
+      needs.attach-binaries.result == 'success' &&
+      (
+        github.event_name == 'workflow_dispatch' ||
+        needs.release-please.outputs.release_created == 'true'
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout homebrew-tap
+        uses: actions/checkout@v6
+        with:
+          repository: say8425/homebrew-tap
+          token: ${{ secrets.HOMEBREW_TAP_PAT }}
+          path: tap
+
+      - name: Render formula
+        env:
+          VERSION_RAW: ${{ github.event.inputs.tag || needs.release-please.outputs.tag_name }}
+        run: |
+          set -euo pipefail
+          # strip leading "v" from tag
+          VERSION="${VERSION_RAW#v}"
+          echo "version=$VERSION"
+          BASE_URL="https://github.com/say8425/hs-cli/releases/download/v${VERSION}"
+
+          declare -A SHA
+          for t in darwin-arm64 darwin-x64 linux-arm64 linux-x64; do
+            curl -fsSL -o "/tmp/hs-$t" "$BASE_URL/hs-$t"
+            SHA[$t]=$(sha256sum "/tmp/hs-$t" | awk '{print $1}')
+            echo "$t: ${SHA[$t]}"
+          done
+
+          cat > tap/Formula/hs-cli.rb <<RB
+          class HsCli < Formula
+            desc "Hearthstone CLI for AI agents and humans — decode decks, look up cards, query metadata"
+            homepage "https://github.com/say8425/hs-cli"
+            version "${VERSION}"
+            license "MIT"
+
+            on_macos do
+              on_arm do
+                url "${BASE_URL}/hs-darwin-arm64"
+                sha256 "${SHA[darwin-arm64]}"
+              end
+              on_intel do
+                url "${BASE_URL}/hs-darwin-x64"
+                sha256 "${SHA[darwin-x64]}"
+              end
+            end
+
+            on_linux do
+              on_arm do
+                url "${BASE_URL}/hs-linux-arm64"
+                sha256 "${SHA[linux-arm64]}"
+              end
+              on_intel do
+                url "${BASE_URL}/hs-linux-x64"
+                sha256 "${SHA[linux-x64]}"
+              end
+            end
+
+            def install
+              binary = Dir["hs-*"].first
+              bin.install binary => "hs"
+            end
+
+            test do
+              assert_match version.to_s, shell_output("#{bin}/hs --version")
+            end
+          end
+          RB
+
+      - name: Commit and push
+        env:
+          VERSION_RAW: ${{ github.event.inputs.tag || needs.release-please.outputs.tag_name }}
+        run: |
+          cd tap
+          VERSION="${VERSION_RAW#v}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet Formula/hs-cli.rb; then
+            echo "Formula unchanged. Skipping commit."
+            exit 0
+          fi
+          git add Formula/hs-cli.rb
+          git commit -m "feat: bump hs-cli to ${VERSION}"
+          git push
