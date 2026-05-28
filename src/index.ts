@@ -1,4 +1,4 @@
-#!/usr/bin/env bun
+#!/usr/bin/env node
 import { defineCommand, runMain } from "citty";
 import { cardCommand } from "./commands/card.ts";
 import { deckCommand } from "./commands/deck.ts";

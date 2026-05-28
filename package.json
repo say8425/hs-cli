@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "bun run src/index.ts",
-    "build": "bun build src/index.ts --target=bun --outdir=dist --minify",
+    "build": "bun build src/index.ts --target=node --outdir=dist --minify",
     "start": "bun run dist/index.js",
     "test": "bun test",
     "lint": "oxlint",
