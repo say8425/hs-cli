@@ -24,10 +24,27 @@
     "battlenet",
     "deck",
     "agent",
-    "bun"
+    "bun",
+    "claude-code"
   ],
-  "author": "penguin",
+  "author": "say8425",
   "license": "MIT",
+  "homepage": "https://github.com/say8425/hs-cli#readme",
+  "bugs": {
+    "url": "https://github.com/say8425/hs-cli/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/say8425/hs-cli.git"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
   "engines": {
     "bun": ">=1.3"
   },

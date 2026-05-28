@@ -1,0 +1,56 @@
+name: Bug report
+description: Report a bug in hs-cli
+title: "fix: <short description>"
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a bug. Please fill in the sections below.
+  - type: input
+    id: version
+    attributes:
+      label: hs-cli version
+      description: Output of `hs --version`
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: bun-version
+    attributes:
+      label: Bun version
+      description: Output of `bun --version`
+      placeholder: 1.3.0
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      description: macOS / Linux / Windows + version
+      placeholder: macOS 14.5
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      description: Exact commands you ran
+      placeholder: |
+        1. hs deck "AAEC..."
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: Include full error output if any
+    validations:
+      required: true
