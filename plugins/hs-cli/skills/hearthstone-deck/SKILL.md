@@ -99,46 +99,68 @@ Card data is auto-fetched from the HearthstoneJSON CDN on first use (cached 24h 
 
 If `hs` is not on PATH, instruct the user to install via one of the channels above before running any commands.
 
+## Global flags
+
+Every subcommand accepts:
+
+- `-f, --format <table|json>` — output format. Default `table` (agent-friendly compressed). Switch to `json` only to extract specific fields.
+- `--help` — show usage for the subcommand.
+
+Top-level: `hs --version`, `hs --help`.
+
 ## Command reference
 
 ### `hs deck <code>`
 
 Decode a deck code into a card list. Reports class, format, dust cost, mana curve, and the 30 cards.
 
-```bash
-hs deck <code>                                # table (default, agent-friendly)
-hs deck <code> -f json                        # raw JSON
-```
+- Positional `<code>`: **required**, base64 deck code (typically starts with `AAEC` / `AAEB` / `AAEA`).
+- Exit code: `0` if the code decodes cleanly, `1` if invalid or corrupted.
 
-Exit code: `0` valid, `1` invalid or corrupted code.
+```bash
+hs deck AAECAQcAA0VjgAEAAA==                  # table (default)
+hs deck AAECAQcAA0VjgAEAAA== -f json          # raw JSON
+```
 
 ### `hs card <id|name>`
 
-Single-card lookup by dbfId, cardId, or exact name.
+Single-card lookup. The positional accepts a dbfId (numeric), a cardId (string), or a name. Resolution order:
+
+1. If the value parses as an integer → `findCardByDbfId`.
+2. Else → `findCardById` (exact cardId match like `EX1_572`).
+3. If `findCardById` returns nothing → fallback to `searchCards(query)` and pick the first match.
+
+- Positional: **optional** in the CLI signature, but **either the positional or `--search` must be provided**. Otherwise the CLI exits with `Provide a card ID, dbfId, or use --search`.
 
 ```bash
 hs card 64034                                 # by dbfId
 hs card EX1_572                               # by cardId
-hs card "Lich King"                           # by name (English)
-hs card "리치 왕"                              # by name (Korean — data is koKR)
+hs card "Lich King"                           # by name (fallback to search)
+hs card "리치 왕"                              # Korean name (data is koKR)
 hs card EX1_572 -f json | jq .cost            # extract a single field
 ```
 
-### `hs card --search <q>`
+### `hs card --search <query>`
 
-Substring search with optional filters.
+Substring search with optional filters. Both `--search` and `-s` (short alias) work.
+
+- `--search, -s <string>` — substring match against card name (English and Korean fields).
+- `--class <CLASS>` — one of `DEATHKNIGHT, DEMONHUNTER, DRUID, HUNTER, MAGE, PALADIN, PRIEST, ROGUE, SHAMAN, WARLOCK, WARRIOR, NEUTRAL, WHIZBANG, DREAM`. Case-insensitive (CLI uppercases internally).
+- `--cost <N>` — mana cost. Accepts a string; CLI parses it as an integer.
+
+Passing `--search ""` (empty) plus a filter is a valid way to "browse all X-cost Y-class cards".
 
 ```bash
 hs card --search "Zilliax"
-hs card --search "fire" --class MAGE --cost 3
+hs card -s "fire" --class MAGE --cost 3
 hs card --search "" --class PRIEST --cost 3   # browse all 3-cost priest cards
 ```
 
-Filters: `--class` (DEATHKNIGHT, DEMONHUNTER, DRUID, HUNTER, MAGE, PALADIN, PRIEST, ROGUE, SHAMAN, WARLOCK, WARRIOR, NEUTRAL, WHIZBANG, DREAM), `--cost` (integer).
-
-### `hs meta sets|classes|types|rarities`
+### `hs meta <type>`
 
 Game metadata. Useful for filtering, validation, or class-name translation.
+
+- Positional `<type>`: **required**. One of `sets`, `classes`, `types`, `rarities`. Any other value exits with `Invalid type: ... Must be one of: sets, classes, types, rarities`.
 
 ```bash
 hs meta classes                               # 14 class codes
@@ -147,12 +169,7 @@ hs meta types                                 # MINION, SPELL, WEAPON, HERO, ...
 hs meta rarities                              # FREE, COMMON, RARE, EPIC, LEGENDARY
 ```
 
-Cache these in working memory for the session — they rarely change.
-
-## Output Formats
-
-- `table` (default): agent-friendly compressed output. Best for any human-readable answer.
-- `-f json`: full structured data. Use only when extracting specific fields for computation or diff.
+Cache the output in working memory for the session — these rarely change.
 
 ## DO
 
@@ -173,54 +190,48 @@ Cache these in working memory for the session — they rarely change.
 
 ## Recipes
 
-### Deck summary (most common request)
-
-```bash
-hs deck <code>
-```
+Multi-step workflows that combine commands or pipe to `jq`. Single-command usage lives in **Command reference**.
 
 ### Compare two decks
 
 ```bash
 hs deck "$A" -f json > /tmp/a.json
 hs deck "$B" -f json > /tmp/b.json
-# Diff card lists programmatically (jq, node, etc.)
+# Diff card lists programmatically with jq / node / etc.
+diff <(jq -r '.cards[] | "\(.count) \(.name)"' /tmp/a.json | sort) \
+     <(jq -r '.cards[] | "\(.count) \(.name)"' /tmp/b.json | sort)
 ```
 
-### Find replacement cards at the same cost / class
-
-```bash
-hs card --search "" --class PRIEST --cost 3
-```
-
-### Identify an expensive card to swap
+### Identify expensive cards to swap
 
 ```bash
 hs deck <code> -f json | jq '.cards[] | select(.rarity == "LEGENDARY") | {name, dust}'
 ```
 
-### Sanity-check a deck code
+### Suggest replacements at the same cost/class
 
 ```bash
-hs deck <code> 2>&1
-# Exit code 0 = valid, 1 = invalid
+# 1) Inspect target card to learn its class and cost.
+hs card <id> -f json
+# 2) Browse alternatives at that cost + class.
+hs card --search "" --class PRIEST --cost 3
 ```
 
-### Look up a card in any language
+### Validate user input before running deeper analysis
 
 ```bash
-hs card --search "Lich King"
-hs card --search "리치 왕"
-hs card --search "リッチキング"
+if ! hs deck "$CODE" > /dev/null 2>&1; then
+  echo "Invalid deck code"
+  exit 1
+fi
+hs deck "$CODE"          # safe to run table summary now
 ```
 
-The CLI data is `koKR`, so Korean queries match against official Korean names; English queries match by substring against the English name field.
-
-### Translate a class code for the user
+### Resolve a card name when language is ambiguous
 
 ```bash
-hs meta classes
-# Table output includes localized labels for the prompt language.
+# Try English first; fall back to Korean if no match.
+hs card --search "$Q" || hs card --search "$Q_KO"
 ```
 
 ## Limitations
