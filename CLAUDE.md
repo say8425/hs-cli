@@ -25,10 +25,10 @@ bun run fmt                         # oxfmt src tests (writes)
 bun run fmt:check                   # oxfmt src tests --check (CI)
 bun run typecheck                   # tsc --noEmit
 bun run check                       # lint + fmt:check + typecheck + test
-hs deck <code>                      # decode deck (table format default)
-hs card <dbfId|cardId|name>         # card lookup
-hs card --search <q> --class CLASS  # filtered search
-hs meta sets|classes|types|rarities
+hs deck <code> [-l koKR]            # decode deck (table format default)
+hs card <dbfId|cardId|name> [-l koKR]  # card lookup
+hs card --search <q> --class CLASS [-l koKR]  # filtered search
+hs meta sets|classes|types|rarities [-l koKR]
 ```
 
 Add `-f json` to any command for raw JSON. Default `table` format is agent-friendly (compressed).
@@ -63,9 +63,22 @@ Claude Code plugin install (all channels): `/plugin marketplace add say8425/hs-c
 - `src/services/card-db.ts` — HearthstoneJSON CDN fetch + local cache at `~/.hs-cli/`
 - `src/services/deck-decoder.ts` — wraps `deckstrings` npm, joins with card DB
 - `src/services/formatter.ts` — table/json output. **Add new formatters here, not in commands.**
+- `src/services/locale.ts` — locale detection + normalization (`ko` / `ko-KR` / `ko_KR` / `koKR` → `koKR`)
 - `src/types/index.ts` — `Card`, `Deck`, `DeckCard` types + Korean class name map
 - `tests/` — bun:test files, one per service. Imports use `.ts` extension (Bun resolves native TS).
 - `tsconfig.json` — typecheck + IDE config. `noEmit: true`, `allowImportingTsExtensions: true`. No separate build config.
+
+## Locales
+
+14 locales supported: `enUS`, `enGB`, `frFR`, `deDE`, `koKR`, `esES`, `esMX`, `ruRU`, `zhTW`, `zhCN`, `itIT`, `ptBR`, `plPL`, `jaJP`, `thTH`.
+
+Default locale is **enUS**. Override per command with `-l <code>` or set permanently via `HS_CLI_LOCALE`.
+
+Auto-detect order: `HS_CLI_LOCALE` → `LC_ALL` → `LC_MESSAGES` → `LANG` → `LANGUAGE` → `enUS`.
+
+Input normalization: `ko`, `ko-KR`, `ko_KR`, `koKR` all resolve to `koKR` (same for all locales).
+
+Card data is cached per locale at `~/.hs-cli/cards-<locale>.json` (24h TTL).
 
 ## Data source: HearthstoneJSON, NOT Battle.net API
 
@@ -99,12 +112,14 @@ If oxlint complains, fix the code — don't disable rules. The config is intenti
 - Import source with `.ts` extension (Bun resolves native TS)
 - No mocks — these are integration tests against real HearthstoneJSON cache
 - Card-bound tests use `requireCard(dbfId)` helper to fail fast if test fixture missing
+- `tests/locale.test.ts` covers locale detection and normalization logic
 
 ## Gotchas
 
 - `deckstrings.decode()` returns dbfIds; you MUST join with card DB to get names/costs
 - HearthstoneJSON `koKR` translations are official Blizzard strings (extracted from game), not community
 - Card cache TTL is 24h. Force refresh: `rm ~/.hs-cli/cards-all.json ~/.hs-cli/cards.meta.json`
+- Cache is per locale. `rm ~/.hs-cli/cards-*.json` to force re-fetch all locales.
 - Bun's `bun run` works for both scripts and direct file execution. `bun run dev` is just an alias for the `dev` script.
 - env vars on same line as `curl -u "$VAR"` don't expand correctly in zsh. Use `export VAR=` first or pass via `-d` body
 - LSP/IDE may show stale TypeScript errors after big config changes. Trust `bunx tsc --noEmit` output over LSP red squiggles.

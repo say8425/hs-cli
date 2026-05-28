@@ -150,6 +150,25 @@ SKILL がエージェントに教えること:
 - マルチ言語ユーザー向けにクラス名を翻訳
 - 出力内の `Unknown (id)` で古い/無効なデッキコードを検出
 
+## ローカライゼーション
+
+`hs` のデフォルトロケールは **enUS(英語)** です。各コマンドで `-l, --locale <code>` フラグを使って上書きするか、`HS_CLI_LOCALE` を環境変数に設定して永続的に変更できます。
+
+```bash
+hs deck <code> -l jaJP              # 日本語カード名でデッキをデコード
+hs card --search "ジリアックス" -l jaJP  # 日本語カード名で検索
+hs card --search "Zilliax"          # デフォルト(enUS)英語で検索
+export HS_CLI_LOCALE=jaJP          # 永続設定 — すべてのコマンドに適用
+```
+
+**対応ロケール (14種):** `enUS` `enGB` `frFR` `deDE` `koKR` `esES` `esMX` `ruRU` `zhTW` `zhCN` `itIT` `ptBR` `plPL` `jaJP` `thTH`
+
+入力表記は柔軟です — `ja`, `ja-JP`, `ja_JP`, `jaJP` はすべて同じロケールとして扱われます。
+
+**自動検出順序** (`-l` 省略時): `HS_CLI_LOCALE` → `LC_ALL` → `LC_MESSAGES` → `LANG` → `LANGUAGE` → `enUS`
+
+カードデータはロケールごとに `~/.hs-cli/cards-<locale>.json` に 24 時間キャッシュされます。
+
 ## アーキテクチャ
 
 ```

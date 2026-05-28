@@ -150,6 +150,25 @@ El skill enseña al agente a:
 - Traducir nombres de clases para usuarios multilingües
 - Detectar códigos de mazo antiguos/inválidos mediante marcadores `Unknown (id)` en la salida
 
+## Localización
+
+`hs` usa **enUS (inglés)** como configuración regional predeterminada. Puedes sobreescribirla con `-l, --locale <code>` en cualquier comando, o exportar `HS_CLI_LOCALE` para un cambio permanente.
+
+```bash
+hs deck <code> -l esES              # decodificar con nombres de carta en español
+hs card --search "Zilliax" -l esES  # buscar en datos de nombre en español
+hs card --search "Zilliax"          # búsqueda en inglés (enUS por defecto)
+export HS_CLI_LOCALE=esES          # configuración permanente — todos los comandos en español
+```
+
+**Configuraciones regionales disponibles (14):** `enUS` `enGB` `frFR` `deDE` `koKR` `esES` `esMX` `ruRU` `zhTW` `zhCN` `itIT` `ptBR` `plPL` `jaJP` `thTH`
+
+La entrada es flexible — `es`, `es-ES`, `es_ES` y `esES` se resuelven al mismo locale.
+
+**Orden de detección automática** (cuando se omite `-l`): `HS_CLI_LOCALE` → `LC_ALL` → `LC_MESSAGES` → `LANG` → `LANGUAGE` → `enUS`
+
+Los datos de cartas se almacenan en caché por locale en `~/.hs-cli/cards-<locale>.json` durante 24h.
+
 ## Arquitectura
 
 ```

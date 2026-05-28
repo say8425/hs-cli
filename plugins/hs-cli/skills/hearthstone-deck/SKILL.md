@@ -62,7 +62,7 @@ These are not modes but appear frequently in community discussion across languag
 
 ### Class names across languages and community shorthand
 
-The CLI returns Korean class names by default (data source is HearthstoneJSON `koKR`), so output may contain Hangul even when the prompt language is something else — this is expected. Use the table to translate output for the user's prompt language and to recognize community slang as a trigger.
+The CLI defaults to `enUS` data. When the user passes `-l ko` or has `HS_CLI_LOCALE=ko` set, output will contain Korean (Hangul) class and card names. Use the table to translate output for the user's prompt language and to recognize community slang as a trigger.
 
 Cell format: `Official (short / slang)`. Empty cell = no widely-used localized form, English is used.
 
@@ -108,11 +108,14 @@ Card data is auto-fetched from the HearthstoneJSON CDN on first use (cached 24h 
 
 If `hs` is not on PATH, instruct the user to install via one of the channels above before running any commands.
 
+Default locale is **enUS**. Use `-l ko` (or `HS_CLI_LOCALE=ko`) for Korean card names.
+
 ## Global flags
 
 Every subcommand accepts:
 
 - `-f, --format <table|json>` — output format. Default `table` (agent-friendly compressed). Switch to `json` only to extract specific fields.
+- `-l, --locale <code>` — card data locale. Default `enUS`. Accepts short forms: `ko`, `ko-KR`, `koKR` all resolve to `koKR`. Supported: `enUS` `enGB` `frFR` `deDE` `koKR` `esES` `esMX` `ruRU` `zhTW` `zhCN` `itIT` `ptBR` `plPL` `jaJP` `thTH`.
 - `--help` — show usage for the subcommand.
 
 Top-level: `hs --version`, `hs --help`.
@@ -127,7 +130,8 @@ Decode a deck code into a card list. Reports class, format, dust cost, mana curv
 - Exit code: `0` if the code decodes cleanly, `1` if invalid or corrupted.
 
 ```bash
-hs deck AAECAQcAA0VjgAEAAA==                  # table (default)
+hs deck AAECAQcAA0VjgAEAAA==                  # table (default, enUS)
+hs deck AAECAQcAA0VjgAEAAA== -l koKR          # Korean card names
 hs deck AAECAQcAA0VjgAEAAA== -f json          # raw JSON
 ```
 
@@ -142,10 +146,10 @@ Single-card lookup. The positional accepts a dbfId (numeric), a cardId (string),
 - Positional: **optional** in the CLI signature, but **either the positional or `--search` must be provided**. Otherwise the CLI exits with `Provide a card ID, dbfId, or use --search`.
 
 ```bash
-hs card 64034                                 # by dbfId
+hs card 64034                                 # by dbfId (enUS, default)
 hs card EX1_572                               # by cardId
-hs card "Lich King"                           # by name (fallback to search)
-hs card "리치 왕"                              # Korean name (data is koKR)
+hs card "Lich King"                           # by name (enUS data)
+hs card "리치 왕" -l ko                        # Korean name (koKR data)
 hs card EX1_572 -f json | jq .cost            # extract a single field
 ```
 
@@ -160,7 +164,8 @@ Substring search with optional filters. Both `--search` and `-s` (short alias) w
 An empty `--search ""` is **rejected** by the CLI (treated as missing). Use `--search " "` (single space) as a wildcard substring to "browse all X-cost Y-class cards".
 
 ```bash
-hs card --search "Zilliax"
+hs card --search "Zilliax"                     # enUS (default)
+hs card --search "질리악스" -l ko              # Korean search
 hs card -s "fire" --class MAGE --cost 3
 hs card --search " " --class PRIEST --cost 3   # browse all 3-cost priest cards
 ```
@@ -221,7 +226,7 @@ hs card <id> -f json | jq keys
 # Notes:
 #   - mechanics / referencedTags can be null
 #   - race is single ("DRAGON"), races is the multi-tribe array ("ALL" etc.)
-#   - text and name are koKR (data source is HearthstoneJSON koKR)
+#   - text and name are in the active locale (enUS by default; use -l ko for koKR)
 #   - spellSchool is set only on cards with type == "SPELL"
 #     (values: FIRE, FROST, NATURE, ARCANE, HOLY, SHADOW, FEL, ...)
 
@@ -374,8 +379,12 @@ hs deck "$CODE"          # table summary
 ### Resolve a card name across languages ("이게 영어로 뭐?", "English name of 리치 왕?")
 
 ```bash
-hs card --search "리치 왕" -f json | jq '.[0] | {name, id, dbfId}'
-# Use the resolved id/dbfId for any further lookups in the user's prompt language.
+# Look up by Korean name → get the dbfId → re-fetch in English
+hs card --search "리치 왕" -l ko -f json | jq '.[0] | {name, id, dbfId}'
+# Then look up the same card in English using the dbfId (locale-independent)
+hs card <dbfId>                    # enUS (default)
+# Or look up in any target locale directly
+hs card <dbfId> -l jaJP            # Japanese name
 ```
 
 ### Normalize user-provided class to a valid `--class` code ("법사 카드 뽑아줘", "show me Lock cards", "术士牌")
@@ -480,10 +489,10 @@ hs deck "$CODE" -f json | jq '
 
 ### Card draw / cycle count ("이 덱 카드 드로우 몇 장?", "how much card draw?")
 
-Card text is `koKR`. Grep for the Korean phrase **"카드를 뽑"** which covers "카드를 뽑습니다", "카드를 뽑으세요", etc. Add other locale-equivalent strings if needed.
+Card text is in the active locale. The example below uses `-l ko` to grep for the Korean phrase **"카드를 뽑"** (covers "카드를 뽑습니다", "카드를 뽑으세요", etc.). For enUS, grep for `"Draw"` instead.
 
 ```bash
-hs deck "$CODE" -f json | jq '
+hs deck "$CODE" -l ko -f json | jq '
   [ .cards[] | select(.card.text and (.card.text | test("카드를 뽑"))) | {name: .card.name, n: .count} ]
   | {sources: ., total: (map(.n) | add // 0)}
 '
@@ -551,7 +560,7 @@ hs deck "$CODE" -f json | jq '
 Discover effects are tagged in `referencedTags` (not always in `mechanics`). Korean text key: `발견`.
 
 ```bash
-hs card --search "발견" -f json | jq '
+hs card --search "발견" -l ko -f json | jq '
   .[] | select(.collectible and (.cardClass == "PRIEST"))   # tweak class
   | {name, cost, type, text}
 '
@@ -578,20 +587,23 @@ hs deck "$CODE" -f json | jq '
 '
 ```
 
-### Important: `hs card --search` is Korean-only
+### `hs card --search` and locale
 
-The CLI matches against the `koKR` card name and text fields. **English / Japanese / Chinese / Spanish search strings will return 0 hits.** When the user types a query in another language:
+Search matches against card name fields in the **active locale**. The default locale is `enUS`, so English queries work out of the box. For other languages, pass `-l <code>` or set `HS_CLI_LOCALE`.
 
 ```bash
-# Wrong: search will return nothing
-hs card --search "Doomhammer"
-# Right: look up by cardId or dbfId if the user knows it
-hs card EX1_567        # Doomhammer
-# Right: translate to Korean first, then search
-hs card --search "운명의 망치"
+# English search (default enUS)
+hs card --search "Zilliax"
+# Korean search — requires koKR data
+hs card --search "질리악스" -l ko
+# Japanese search — requires jaJP data
+hs card --search "ジリアックス" -l jaJP
+# If you only know the cardId or dbfId, locale doesn't matter
+hs card EX1_567        # Doomhammer — works in any locale
+hs card 1657           # by dbfId — locale-independent
 ```
 
-Use the multilingual class table in this skill as a cheat sheet for class words. For card names, ask the user for the Korean name, the cardId (`EX1_*`), or the dbfId (integer). The koKR-only behavior is a HearthstoneJSON data choice, not a CLI bug.
+When the user's prompt is in English, use the default `enUS` (no flag needed). When the prompt is in Korean, add `-l ko` (or advise `export HS_CLI_LOCALE=ko`). cardId and dbfId lookups are locale-independent and always work.
 
 ## Limitations
 

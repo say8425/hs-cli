@@ -150,6 +150,25 @@ SKILL 教代理:
 - 为多语言用户翻译职业名
 - 通过输出中的 `Unknown (id)` 标记检测旧/无效套牌代码
 
+## 本地化
+
+`hs` 默认使用 **enUS（英语）** 语言环境。可通过每条命令的 `-l, --locale <code>` 标志覆盖，或导出 `HS_CLI_LOCALE` 环境变量以永久生效。
+
+```bash
+hs deck <code> -l zhCN              # 用中文卡牌名称解码套牌
+hs card --search "吉里亚克斯" -l zhCN  # 搜索中文卡牌名称
+hs card --search "Zilliax"          # 默认(enUS)英文搜索
+export HS_CLI_LOCALE=zhCN          # 永久设置 — 所有命令均使用中文
+```
+
+**支持的语言环境（14 个）：** `enUS` `enGB` `frFR` `deDE` `koKR` `esES` `esMX` `ruRU` `zhTW` `zhCN` `itIT` `ptBR` `plPL` `jaJP` `thTH`
+
+输入格式灵活 — `zh`, `zh-CN`, `zh_CN`, `zhCN` 均解析为同一语言环境。
+
+**自动检测顺序**（省略 `-l` 时）：`HS_CLI_LOCALE` → `LC_ALL` → `LC_MESSAGES` → `LANG` → `LANGUAGE` → `enUS`
+
+卡牌数据按语言环境缓存于 `~/.hs-cli/cards-<locale>.json`，有效期 24 小时。
+
 ## 架构
 
 ```

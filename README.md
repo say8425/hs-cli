@@ -157,6 +157,25 @@ The skill teaches the agent:
 - Translate class names for Korean users
 - Detect old/invalid deck codes by `Unknown (id)` markers in output
 
+## Localization
+
+`hs` defaults to **enUS**. Override with `-l, --locale <code>` on any command, or export `HS_CLI_LOCALE` to make it permanent.
+
+```bash
+hs deck <code> -l koKR              # decode with Korean card names
+hs card --search "질리악스" -l ko   # search Korean name data
+hs card --search "ジリアックス" -l jaJP  # search Japanese name data
+export HS_CLI_LOCALE=ko            # permanent – all commands use Korean
+```
+
+**Supported locales (14):** `enUS` `enGB` `frFR` `deDE` `koKR` `esES` `esMX` `ruRU` `zhTW` `zhCN` `itIT` `ptBR` `plPL` `jaJP` `thTH`
+
+Input is flexible — `ko`, `ko-KR`, `ko_KR`, and `koKR` all resolve to the same locale.
+
+**Auto-detect order** (when `-l` is omitted): `HS_CLI_LOCALE` → `LC_ALL` → `LC_MESSAGES` → `LANG` → `LANGUAGE` → `enUS`
+
+Card data is cached per locale at `~/.hs-cli/cards-<locale>.json` for 24h.
+
 ## Architecture
 
 ```

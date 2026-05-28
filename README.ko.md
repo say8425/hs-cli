@@ -150,6 +150,25 @@ SKILL이 가르치는 것:
 - 한국어 사용자를 위해 직업명 번역
 - `Unknown (id)` 표시로 오래된/잘못된 덱 코드 감지
 
+## 다국어 지원
+
+`hs`의 기본 로케일은 **enUS(영어)**입니다. 명령마다 `-l, --locale <code>` 플래그로 덮어쓰거나, `HS_CLI_LOCALE`을 환경 변수로 설정해 영구 적용할 수 있습니다.
+
+```bash
+hs deck <code> -l koKR              # 한국어 카드 이름으로 덱 디코딩
+hs card --search "질리악스" -l ko   # 한국어 카드명 검색
+hs card --search "Zilliax"          # 기본(enUS) 영어 검색
+export HS_CLI_LOCALE=ko            # 영구 설정 — 모든 명령에 한국어 적용
+```
+
+**지원 로케일 (14개):** `enUS` `enGB` `frFR` `deDE` `koKR` `esES` `esMX` `ruRU` `zhTW` `zhCN` `itIT` `ptBR` `plPL` `jaJP` `thTH`
+
+입력 표기는 유연합니다 — `ko`, `ko-KR`, `ko_KR`, `koKR` 모두 동일하게 처리됩니다.
+
+**자동 감지 순서** (`-l` 생략 시): `HS_CLI_LOCALE` → `LC_ALL` → `LC_MESSAGES` → `LANG` → `LANGUAGE` → `enUS`
+
+카드 데이터는 로케일별로 `~/.hs-cli/cards-<locale>.json`에 24시간 캐싱됩니다.
+
 ## 아키텍처
 
 ```
