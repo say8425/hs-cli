@@ -157,12 +157,12 @@ Substring search with optional filters. Both `--search` and `-s` (short alias) w
 - `--class <CLASS>` — one of `DEATHKNIGHT, DEMONHUNTER, DRUID, HUNTER, MAGE, PALADIN, PRIEST, ROGUE, SHAMAN, WARLOCK, WARRIOR, NEUTRAL, WHIZBANG, DREAM`. Case-insensitive (CLI uppercases internally).
 - `--cost <N>` — mana cost. Accepts a string; CLI parses it as an integer.
 
-Passing `--search ""` (empty) plus a filter is a valid way to "browse all X-cost Y-class cards".
+An empty `--search ""` is **rejected** by the CLI (treated as missing). Use `--search " "` (single space) as a wildcard substring to "browse all X-cost Y-class cards".
 
 ```bash
 hs card --search "Zilliax"
 hs card -s "fire" --class MAGE --cost 3
-hs card --search "" --class PRIEST --cost 3   # browse all 3-cost priest cards
+hs card --search " " --class PRIEST --cost 3   # browse all 3-cost priest cards
 ```
 
 ### `hs meta <type>`
@@ -216,7 +216,14 @@ hs deck <code> -f json
 
 hs card <id> -f json | jq keys
 # artist, attack, cardClass, collectible, cost, dbfId, flavor, health,
-# id, mechanics[], name, race, rarity, referencedTags[], set, text, type
+# id, mechanics[], name, race, races[], rarity, referencedTags[], set,
+# spellSchool, text, type
+# Notes:
+#   - mechanics / referencedTags can be null
+#   - race is single ("DRAGON"), races is the multi-tribe array ("ALL" etc.)
+#   - text and name are koKR (data source is HearthstoneJSON koKR)
+#   - spellSchool is set only on cards with type == "SPELL"
+#     (values: FIRE, FROST, NATURE, ARCANE, HOLY, SHADOW, FEL, ...)
 
 hs meta <type> -f json
 { "type": "sets"|"classes"|"types"|"rarities", "values": [ "...", ... ] }
@@ -320,11 +327,11 @@ done
 
 ### Find aggro/midrange/control candidates by curve
 
-The CLI doesn't classify archetype directly. Use `--search ""` plus `--class` and `--cost` to enumerate the candidate pool, then build your own curve:
+The CLI doesn't classify archetype directly. Use `--search " "` plus `--class` and `--cost` to enumerate the candidate pool, then build your own curve:
 
 ```bash
 for COST in 1 2 3; do
-  hs card --search "" --class ROGUE --cost "$COST" -f json | jq '.[].name'
+  hs card --search " " --class ROGUE --cost "$COST" -f json | jq '.[].name'
 done
 ```
 
@@ -338,10 +345,10 @@ hs deck "$CODE" -f json | jq '
 
 ### Tribe + class + cost filter ("3코 마법사 용족", "1-cost Pirate Rogue")
 
-`--search ""` returns all candidates at that filter; pipe through jq for tribe:
+`--search " "` returns all candidates at that filter; pipe through jq for tribe:
 
 ```bash
-hs card --search "" --class MAGE --cost 3 -f json | jq '
+hs card --search " " --class MAGE --cost 3 -f json | jq '
   .[] | select(.race == "DRAGON") | {name, attack, health, text}
 '
 ```
@@ -381,7 +388,7 @@ USER_CLASS="법사"                       # could be Lock, 法师, Mage, パラ,
 CLASS_CODE="MAGE"
 # Step 2: verify it is a valid CLI filter value
 if hs meta classes -f json | jq -e --arg c "$CLASS_CODE" '.values | index($c)' > /dev/null; then
-  hs card --search "" --class "$CLASS_CODE"
+  hs card --search " " --class "$CLASS_CODE"
 else
   echo "Invalid class code"; hs meta classes
 fi
@@ -470,6 +477,121 @@ hs deck "$CODE" -f json | jq '
 #   avg_cost >= 3.5  -> Control
 #   pirate_count >= 6 or dragon_count >= 6 -> tribe-themed
 ```
+
+### Card draw / cycle count ("이 덱 카드 드로우 몇 장?", "how much card draw?")
+
+Card text is `koKR`. Grep for the Korean phrase **"카드를 뽑"** which covers "카드를 뽑습니다", "카드를 뽑으세요", etc. Add other locale-equivalent strings if needed.
+
+```bash
+hs deck "$CODE" -f json | jq '
+  [ .cards[] | select(.card.text and (.card.text | test("카드를 뽑"))) | {name: .card.name, n: .count} ]
+  | {sources: ., total: (map(.n) | add // 0)}
+'
+```
+
+### Spell-school breakdown ("이 덱 불 마법 비중", "Fire / Frost / Holy ratio?")
+
+`spellSchool` is set on spell cards only.
+
+```bash
+hs deck "$CODE" -f json | jq '
+  [ .cards[] | select(.card.type == "SPELL") | {school: (.card.spellSchool // "NONE"), n: .count} ]
+  | group_by(.school)
+  | map({school: .[0].school, count: (map(.n) | add)})
+  | sort_by(-.count)
+'
+```
+
+### Find tribe synergy candidates for a deck ("우리 덱 용족 5장, 더 넣을 후보?", "more Pirate cards to add?")
+
+Step 1: figure out the user's class and current tribe count from the deck. Step 2: enumerate tribe candidates inside the same class.
+
+```bash
+HERO_CLASS=$(hs deck "$CODE" -f json | jq -r .heroClass)
+TRIBE=DRAGON
+# class-locked + neutral candidates that share the tribe:
+hs card --search " " --class "$HERO_CLASS" -f json | jq --arg t "$TRIBE" '
+  .[] | select(.race == $t or (.races // []) | index($t)) | {name, cost, attack, health, dbfId}
+'
+hs card --search " " --class NEUTRAL -f json | jq --arg t "$TRIBE" '
+  .[] | select(.race == $t or (.races // []) | index($t)) | {name, cost, attack, health, dbfId}
+'
+```
+
+### Average minion stats per mana ("3코 미니언 평균 스탯", "vanilla check for X-cost minions")
+
+Useful for evaluating whether a custom card / class identity card is over- or under-statted versus the 2/cost vanilla benchmark.
+
+```bash
+hs card --search " " --class NEUTRAL -f json | jq '
+  [ .[] | select(.type == "MINION" and .collectible) ]
+  | group_by(.cost)
+  | map({
+      cost: .[0].cost,
+      sample: length,
+      avg_attack: (map(.attack) | add / length),
+      avg_health: (map(.health) | add / length)
+    })
+'
+```
+
+### Win-condition / finisher detection ("이 덱 win con 뭐야?", "what's the closer?")
+
+Heuristic: high-cost legendaries with damage / kill text. Combine cost threshold + rarity + Korean text greps.
+
+```bash
+hs deck "$CODE" -f json | jq '
+  .cards[] | select(.card.rarity == "LEGENDARY" and .card.cost >= 5)
+  | {name: .card.name, cost: .card.cost, type: .card.type, n: .count, text: .card.text}
+'
+```
+
+### Find all DISCOVER / Battlecry-Discover engines ("발견 효과 카드 보여줘", "what runs Discover?")
+
+Discover effects are tagged in `referencedTags` (not always in `mechanics`). Korean text key: `발견`.
+
+```bash
+hs card --search "발견" -f json | jq '
+  .[] | select(.collectible and (.cardClass == "PRIEST"))   # tweak class
+  | {name, cost, type, text}
+'
+```
+
+### Locate cards with a specific keyword across the deck ("도발 / 은신 / 천보 누구 있어?")
+
+```bash
+hs deck "$CODE" -f json | jq --arg k "TAUNT" '
+  .cards[] | select((.card.mechanics // []) | index($k))
+  | {name: .card.name, cost: .card.cost, n: .count}
+'
+# Replace TAUNT with RUSH, DIVINE_SHIELD, LIFESTEAL, DEATHRATTLE, SECRET, etc.
+```
+
+### Multi-tribe card detection ("이 카드 다종족이야?", "ALL tribe?")
+
+`races` array is set when a card belongs to more than one tribe (e.g. "Murloc + Beast" or "ALL").
+
+```bash
+hs deck "$CODE" -f json | jq '
+  .cards[] | select((.card.races // []) | length > 1)
+  | {name: .card.name, races: .card.races, n: .count}
+'
+```
+
+### Important: `hs card --search` is Korean-only
+
+The CLI matches against the `koKR` card name and text fields. **English / Japanese / Chinese / Spanish search strings will return 0 hits.** When the user types a query in another language:
+
+```bash
+# Wrong: search will return nothing
+hs card --search "Doomhammer"
+# Right: look up by cardId or dbfId if the user knows it
+hs card EX1_567        # Doomhammer
+# Right: translate to Korean first, then search
+hs card --search "운명의 망치"
+```
+
+Use the multilingual class table in this skill as a cheat sheet for class words. For card names, ask the user for the Korean name, the cardId (`EX1_*`), or the dbfId (integer). The koKR-only behavior is a HearthstoneJSON data choice, not a CLI bug.
 
 ## Limitations
 
