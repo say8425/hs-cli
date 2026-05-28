@@ -3,8 +3,7 @@
   "name": "say8425",
   "description": "Plugins for Hearthstone deck analysis and other CLI-driven AI agent workflows",
   "owner": {
-    "name": "penguin",
-    "email": "cheon.park@musinsa.com"
+    "name": "say8425"
   },
   "plugins": [
     {

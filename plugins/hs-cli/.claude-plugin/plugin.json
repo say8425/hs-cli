@@ -4,8 +4,7 @@
   "description": "Hearthstone deck decoder, card search, and metadata queries via the `hs` CLI. Requires the hs binary on PATH (install via Bun: see README).",
   "version": "0.1.0",
   "author": {
-    "name": "penguin",
-    "email": "cheon.park@musinsa.com"
+    "name": "say8425"
   },
   "homepage": "https://github.com/say8425/hs-cli",
   "repository": "https://github.com/say8425/hs-cli",
