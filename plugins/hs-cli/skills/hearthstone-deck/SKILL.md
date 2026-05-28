@@ -60,24 +60,33 @@ These are not modes but appear frequently in community discussion across languag
 - hero power (en, ko 영능, jp ヒーローパワー, zh 英雄技能)
 - dust / disenchant (en dust, ko 가루, jp 魔素, zh 奥术之尘)
 
-### Korean class names (used by table output)
+### Class names across languages and community shorthand
 
-The CLI returns Korean class names by default (data source is HearthstoneJSON `koKR`), so output may contain Hangul even when the prompt language is something else — this is expected.
+The CLI returns Korean class names by default (data source is HearthstoneJSON `koKR`), so output may contain Hangul even when the prompt language is something else — this is expected. Use the table to translate output for the user's prompt language and to recognize community slang as a trigger.
 
-| Class code | 한국어 |
-|---|---|
-| DEATHKNIGHT | 죽음의 기사 |
-| DEMONHUNTER | 악마 사냥꾼 |
-| DRUID | 드루이드 |
-| HUNTER | 사냥꾼 |
-| MAGE | 마법사 |
-| PALADIN | 성기사 |
-| PRIEST | 사제 |
-| ROGUE | 도적 |
-| SHAMAN | 주술사 |
-| WARLOCK | 흑마법사 |
-| WARRIOR | 전사 |
-| NEUTRAL | 중립 |
+Cell format: `Official (short / slang)`. Empty cell = no widely-used localized form, English is used.
+
+| Class code | English (slang) | 한국어 (축약) | 日本語 (略) | 中文 (简, 简称) | 中文 (繁, 簡稱) | Español | Français | Deutsch (Kürzel) | Русский |
+|---|---|---|---|---|---|---|---|---|---|
+| DEATHKNIGHT | Death Knight (DK) | 죽음의 기사 (죽기, DK) | デスナイト (DK) | 死亡骑士 (死骑, DK) | 死亡騎士 (DK) | Caballero de la Muerte (DK) | Chevalier de la mort (CdM) | Todesritter (TR) | Рыцарь Смерти (РС) |
+| DEMONHUNTER | Demon Hunter (DH) | 악마 사냥꾼 (악사, DH) | デーモンハンター (DH) | 恶魔猎手 (恶魔, DH) | 惡魔獵人 (DH) | Cazador de demonios (DH) | Chasseur de démons (CdD) | Dämonenjäger (DJ) | Охотник на демонов (ОД) |
+| DRUID | Druid | 드루이드 (드루) | ドルイド (ドル) | 德鲁伊 (德) | 德魯伊 (德) | Druida | Druide | Druide | Друид |
+| HUNTER | Hunter (Hunt) | 사냥꾼 (사냥, 헌터) | ハンター (ハン) | 猎人 (猎) | 獵人 (獵) | Cazador | Chasseur | Jäger | Охотник |
+| MAGE | Mage | 마법사 (법사, 마법) | メイジ | 法师 (法) | 法師 (法) | Mago | Mage | Magier | Маг |
+| PALADIN | Paladin (Pally / Pal) | 성기사 (성기, 팔라, 팔라딘) | パラディン (パラ) | 圣骑士 (圣骑, 骑士) | 聖騎士 (聖騎, 騎士) | Paladín | Paladin | Paladin | Паладин (Палыч) |
+| PRIEST | Priest | 사제 (프리스트) | プリースト (プリ) | 牧师 (牧) | 牧師 (牧) | Sacerdote | Prêtre | Priester | Жрец |
+| ROGUE | Rogue | 도적 (도둑, 로그) | ローグ | 潜行者 (盗贼, 贼) | 盜賊 (賊) | Pícaro | Voleur | Schurke | Разбойник (Роуг) |
+| SHAMAN | Shaman (Shammy) | 주술사 (주술, 슈먼) | シャーマン (シャマ) | 萨满 (萨) | 薩滿 (薩) | Chamán | Chaman | Schamane | Шаман |
+| WARLOCK | Warlock (Lock / Locks) | 흑마법사 (흑마, 흑법) | ウォーロック (ロック) | 术士 (术) | 術士 (術) | Brujo | Démoniste | Hexenmeister (Hexer) | Чернокнижник (ЧК) |
+| WARRIOR | Warrior (Warr) | 전사 (워리) | ウォリアー (ウォリ) | 战士 (战) | 戰士 (戰) | Guerrero | Guerrier | Krieger | Воин |
+| NEUTRAL | Neutral | 중립 | 中立 | 中立 | 中立 | Neutral | Neutre | Neutral | Нейтрал |
+
+Two additional codes appear in CLI filter validation but rarely in community talk:
+
+- `WHIZBANG` — Maestro Whizbang dynamic-deck hero. Most languages just write "Whizbang" / 위즈뱅 / ウィズバン / 维兹班.
+- `DREAM` — internal "Dream" class for boss-token cards (Ysera-only historically). Not used in community deck talk.
+
+When the user uses any cell in the table (e.g. "용암 흑법덱 보여줘", "Lock deck", "术士 OTK"), normalize to the class code in the first column and pass it as `--class`.
 
 ## Prerequisites
 
