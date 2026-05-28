@@ -21,10 +21,41 @@
 
 ## 安装
 
-需要 **Bun 1.3+**([安装](https://bun.sh))。无需 Node、pnpm、tsx。
+### Homebrew (macOS / Linux — 推荐)
+
+无需任何运行时。安装约 64 MB 的独立二进制文件。
 
 ```bash
-git clone <repo> hs-cli
+brew install say8425/tap/hs-cli
+```
+
+支持 darwin arm64/x64 和 linux arm64/x64。
+
+### npm (需要 Node 22+)
+
+```bash
+npm install -g @say8425/hs-cli
+```
+
+需要 **Node 22+**。无需 Bun。
+
+### 预构建二进制文件
+
+从 [GitHub Releases](https://github.com/say8425/hs-cli/releases/latest) 下载对应平台的二进制文件，然后赋予执行权限:
+
+```bash
+chmod +x hs-<platform>
+mv hs-<platform> /usr/local/bin/hs
+```
+
+支持平台: darwin arm64/x64、linux arm64/x64、windows x64。无需运行时。
+
+### 从源码构建 (开发用)
+
+需要 **Bun 1.3+**([安装](https://bun.sh))。
+
+```bash
+git clone https://github.com/say8425/hs-cli.git hs-cli
 cd hs-cli
 bun install
 bun run build

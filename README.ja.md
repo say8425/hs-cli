@@ -21,10 +21,41 @@
 
 ## インストール
 
-**Bun 1.3+** が必要([インストール](https://bun.sh))。Node、pnpm、tsx は不要。
+### Homebrew (macOS / Linux — 推奨)
+
+ランタイム不要。約 64 MB の自己完結バイナリをインストールします。
 
 ```bash
-git clone <repo> hs-cli
+brew install say8425/tap/hs-cli
+```
+
+darwin arm64/x64 および linux arm64/x64 に対応。
+
+### npm (Node 22+ 環境)
+
+```bash
+npm install -g @say8425/hs-cli
+```
+
+**Node 22+** が必要。Bun は不要。
+
+### ビルド済みバイナリ
+
+[GitHub Releases](https://github.com/say8425/hs-cli/releases/latest) からプラットフォームに合ったバイナリをダウンロードし、実行権限を付与します:
+
+```bash
+chmod +x hs-<platform>
+mv hs-<platform> /usr/local/bin/hs
+```
+
+対応プラットフォーム: darwin arm64/x64、linux arm64/x64、windows x64。ランタイム不要。
+
+### ソースからビルド (開発用)
+
+**Bun 1.3+** が必要([インストール](https://bun.sh))。
+
+```bash
+git clone https://github.com/say8425/hs-cli.git hs-cli
 cd hs-cli
 bun install
 bun run build

@@ -2,12 +2,14 @@
 
 Hearthstone CLI for AI agents. Decode deck codes, look up cards, query metadata.
 
-## Toolchain
+## Toolchain (dev / build)
 
-- **Bun 1.3+** as runtime, package manager, test runner, and bundler. **No Node, no pnpm, no tsx.**
+- **Bun 1.3+** as dev runtime, package manager, test runner, and bundler. **No Node, no pnpm, no tsx** for development.
 - **citty** for CLI parsing (unjs, ESM-first, type-inferred). **No commander.**
 - **oxlint + oxfmt** for lint/format. `tsc` for typecheck only. **No ESLint, no Prettier.**
 - **bun:test** for testing (Jest-compatible API). **No Vitest/Jest/node:test.**
+
+Note: Bun is a **development** requirement, not an end-user install requirement. End users install via Homebrew (no runtime), npm (Node 22+), or a pre-built binary (no runtime).
 
 ## Commands
 
@@ -43,7 +45,14 @@ plugins/hs-cli/
 └── skills/hearthstone-deck/SKILL.md    # the skill itself, namespace hs-cli:hearthstone-deck
 ```
 
-Install flow for end users: clone repo + `bun link` for the CLI, then `/plugin marketplace add say8425/hs-cli` + `/plugin install hs-cli@say8425` for the skill. Validate with `claude plugin validate .` (marketplace) or `claude plugin validate ./plugins/hs-cli` (plugin).
+Install channels for end users (CLI):
+
+- **Homebrew** (macOS/Linux, recommended): `brew install say8425/tap/hs-cli` — no runtime required, ~64 MB self-contained binary, 4 platforms (darwin arm64/x64, linux arm64/x64).
+- **npm**: `npm install -g @say8425/hs-cli` — requires Node 22+, Bun not needed (build target=node).
+- **Pre-built binary**: download from [GitHub Releases](https://github.com/say8425/hs-cli/releases/latest), `chmod +x`, move to PATH — no runtime required, 5 platforms (+ windows x64).
+- **From source (dev)**: `git clone + bun install + bun run build + bun link` — requires Bun 1.3+.
+
+Claude Code plugin install (all channels): `/plugin marketplace add say8425/hs-cli` + `/plugin install hs-cli@say8425`. Validate with `claude plugin validate .` (marketplace) or `claude plugin validate ./plugins/hs-cli` (plugin).
 
 **Do not duplicate SKILL.md at the repo root.** The single source of truth lives inside the plugin. Root-level docs should link to it, not copy it.
 
@@ -99,6 +108,10 @@ If oxlint complains, fix the code — don't disable rules. The config is intenti
 - Bun's `bun run` works for both scripts and direct file execution. `bun run dev` is just an alias for the `dev` script.
 - env vars on same line as `curl -u "$VAR"` don't expand correctly in zsh. Use `export VAR=` first or pass via `-d` body
 - LSP/IDE may show stale TypeScript errors after big config changes. Trust `bunx tsc --noEmit` output over LSP red squiggles.
+
+## Release pipeline
+
+Merge to `main` → release-please opens a release PR (bumps version, updates CHANGELOG) → merging that PR creates a `v*` tag → CI matrix builds 5-platform binaries (darwin arm64/x64, linux arm64/x64, windows x64) and attaches them to the GitHub Release → npm publish runs automatically → Homebrew tap formula is updated to point to the new binary SHA. Version is currently **0.3.0** (npm + brew both published).
 
 ## Phase 2 (planned, not yet built)
 

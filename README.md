@@ -21,10 +21,41 @@ The Hearthstone ecosystem has libraries and one official Blizzard API, but **no 
 
 ## Install
 
-Requires **Bun 1.3+** ([install](https://bun.sh)). No Node, no pnpm, no tsx.
+### Homebrew (macOS / Linux — recommended)
+
+No runtime required. Installs a self-contained ~64 MB binary.
 
 ```bash
-git clone <repo> hs-cli
+brew install say8425/tap/hs-cli
+```
+
+Supports darwin arm64/x64 and linux arm64/x64.
+
+### npm (any OS with Node 22+)
+
+```bash
+npm install -g @say8425/hs-cli
+```
+
+Requires **Node 22+**. Bun is not required.
+
+### Pre-built binary
+
+Download the binary for your platform from [GitHub Releases](https://github.com/say8425/hs-cli/releases/latest), then make it executable:
+
+```bash
+chmod +x hs-<platform>
+mv hs-<platform> /usr/local/bin/hs
+```
+
+Available platforms: darwin arm64/x64, linux arm64/x64, windows x64. No runtime required.
+
+### From source (for development)
+
+Requires **Bun 1.3+** ([install](https://bun.sh)).
+
+```bash
+git clone https://github.com/say8425/hs-cli.git hs-cli
 cd hs-cli
 bun install
 bun run build
