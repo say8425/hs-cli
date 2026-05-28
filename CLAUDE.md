@@ -31,6 +31,22 @@ hs meta sets|classes|types|rarities
 
 Add `-f json` to any command for raw JSON. Default `table` format is agent-friendly (compressed).
 
+## Marketplace + plugin layout
+
+This repo is both a **Bun CLI project** and a **Claude Code marketplace** that distributes the `hs-cli` plugin. Layout:
+
+```
+.claude-plugin/marketplace.json         # marketplace catalog, lists plugins
+plugins/hs-cli/
+├── .claude-plugin/plugin.json          # plugin manifest
+├── README.md                           # plugin-specific install + usage
+└── skills/hearthstone-deck/SKILL.md    # the skill itself, namespace hs-cli:hearthstone-deck
+```
+
+Install flow for end users: clone repo + `bun link` for the CLI, then `/plugin marketplace add penguin/hs-cli` + `/plugin install hs-cli@penguin-tools` for the skill. Validate with `claude plugin validate .` (marketplace) or `claude plugin validate ./plugins/hs-cli` (plugin).
+
+**Do not duplicate SKILL.md at the repo root.** The single source of truth lives inside the plugin. Root-level docs should link to it, not copy it.
+
 ## Architecture
 
 - `src/index.ts` — citty `runMain`, registers subcommands

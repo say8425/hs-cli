@@ -87,7 +87,20 @@ hs card --search "리치 왕" -f json | jq '.[].dbfId'
 
 ## Agent integration
 
-`hs-cli` ships with a [`SKILL.md`](./SKILL.md) that Claude Code (and compatible agents) can load to use the CLI intelligently. Drop the file under `.claude/skills/hearthstone-deck/` and the agent will pick it up.
+This repo doubles as a **Claude Code marketplace** that exposes the [`hs-cli` plugin](./plugins/hs-cli/). Install it once and Claude Code learns to drive the CLI for you:
+
+```
+/plugin marketplace add penguin/hs-cli
+/plugin install hs-cli@penguin-tools
+```
+
+For local development:
+
+```bash
+claude --plugin-dir ./plugins/hs-cli
+```
+
+The plugin ships the [`hearthstone-deck` skill](./plugins/hs-cli/skills/hearthstone-deck/SKILL.md), namespaced as `/hs-cli:hearthstone-deck`.
 
 Then ask your agent things like:
 

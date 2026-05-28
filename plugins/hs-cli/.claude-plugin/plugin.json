@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin.json",
+  "name": "hs-cli",
+  "description": "Hearthstone deck decoder, card search, and metadata queries via the `hs` CLI. Requires the hs binary on PATH (install via Bun: see README).",
+  "version": "0.1.0",
+  "author": {
+    "name": "penguin",
+    "email": "cheon.park@musinsa.com"
+  },
+  "homepage": "https://github.com/penguin/hs-cli",
+  "repository": "https://github.com/penguin/hs-cli",
+  "license": "MIT",
+  "keywords": ["hearthstone", "cli", "deck", "card", "battlegrounds", "bun"]
+}

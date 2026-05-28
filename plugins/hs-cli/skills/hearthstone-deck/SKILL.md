@@ -1,5 +1,4 @@
 ---
-name: hearthstone-deck
 description: Use when the user wants to inspect, compare, or analyze Hearthstone decks or cards. Triggers on deck codes (long base64 strings starting with "AAEC"), questions like "이 덱 뭐야", "덱 분석해줘", card lookups, or requests to compare decks.
 ---
 
@@ -7,9 +6,17 @@ description: Use when the user wants to inspect, compare, or analyze Hearthstone
 
 ## Prerequisites
 
-- `hs` CLI installed globally (`npm link` in hs-cli repo)
-- Card data auto-fetched from HearthstoneJSON CDN (cached 24h at `~/.hs-cli/`)
-- No API key needed for Phase 1 (deck decode, card search, metadata)
+This skill requires the `hs` CLI binary on PATH. Install it once with Bun before using the skill:
+
+```bash
+git clone https://github.com/penguin/hs-cli.git
+cd hs-cli && bun install && bun run build && bun link
+hs --version    # verify
+```
+
+Card data is auto-fetched from HearthstoneJSON CDN on first use (cached 24h at `~/.hs-cli/`). No API key needed.
+
+If `hs` is not on PATH, tell the user to install per the steps above before running any commands in this skill.
 
 ## Quick Start
 

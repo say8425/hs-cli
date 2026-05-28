@@ -80,7 +80,20 @@ hs card --search "리치 왕" -f json | jq '.[].dbfId'
 
 ## 에이전트 통합
 
-`hs-cli`에는 Claude Code(및 호환 에이전트)가 로드할 수 있는 [`SKILL.md`](./SKILL.md)가 포함되어 있습니다. `.claude/skills/hearthstone-deck/`에 넣으면 자동 인식.
+이 저장소는 **Claude Code 마켓플레이스** 역할도 합니다. [`hs-cli` 플러그인](./plugins/hs-cli/)을 한 번 설치하면 Claude Code가 CLI 사용법을 익혀 자동으로 호출합니다:
+
+```
+/plugin marketplace add penguin/hs-cli
+/plugin install hs-cli@penguin-tools
+```
+
+로컬 개발용:
+
+```bash
+claude --plugin-dir ./plugins/hs-cli
+```
+
+플러그인은 [`hearthstone-deck` 스킬](./plugins/hs-cli/skills/hearthstone-deck/SKILL.md)을 제공하며 네임스페이스는 `/hs-cli:hearthstone-deck` 입니다.
 
 이후 에이전트에게:
 

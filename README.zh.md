@@ -80,7 +80,20 @@ hs card --search "巫妖王" -f json | jq '.[].dbfId'
 
 ## 代理集成
 
-`hs-cli` 自带 [`SKILL.md`](./SKILL.md),Claude Code(及兼容代理)可加载使用。放到 `.claude/skills/hearthstone-deck/`,代理会自动识别。
+本仓库同时是一个 **Claude Code 市场**,提供 [`hs-cli` 插件](./plugins/hs-cli/)。安装一次后 Claude Code 就会学会自动调用 CLI:
+
+```
+/plugin marketplace add penguin/hs-cli
+/plugin install hs-cli@penguin-tools
+```
+
+本地开发:
+
+```bash
+claude --plugin-dir ./plugins/hs-cli
+```
+
+插件包含 [`hearthstone-deck` 技能](./plugins/hs-cli/skills/hearthstone-deck/SKILL.md),命名空间为 `/hs-cli:hearthstone-deck`。
 
 然后可以这样问代理:
 

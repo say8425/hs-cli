@@ -80,7 +80,20 @@ hs card --search "リッチキング" -f json | jq '.[].dbfId'
 
 ## エージェント統合
 
-`hs-cli` には Claude Code(および互換エージェント)が読み込める [`SKILL.md`](./SKILL.md) が同梱されています。`.claude/skills/hearthstone-deck/` に配置すれば自動認識。
+このリポジトリは **Claude Code マーケットプレイス** も兼ねており、[`hs-cli` プラグイン](./plugins/hs-cli/) を提供します。一度インストールすれば Claude Code が CLI の使い方を学習して自動で呼び出します:
+
+```
+/plugin marketplace add penguin/hs-cli
+/plugin install hs-cli@penguin-tools
+```
+
+ローカル開発用:
+
+```bash
+claude --plugin-dir ./plugins/hs-cli
+```
+
+プラグインには [`hearthstone-deck` スキル](./plugins/hs-cli/skills/hearthstone-deck/SKILL.md) が含まれ、ネームスペースは `/hs-cli:hearthstone-deck` です。
 
 その後エージェントに:
 

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "penguin-tools",
+  "description": "Plugins for Hearthstone deck analysis and other CLI-driven AI agent workflows",
+  "owner": {
+    "name": "penguin",
+    "email": "cheon.park@musinsa.com"
+  },
+  "plugins": [
+    {
+      "name": "hs-cli",
+      "source": "./plugins/hs-cli",
+      "description": "Hearthstone deck decoder, card search, and metadata queries via the `hs` CLI",
+      "version": "0.1.0",
+      "author": {
+        "name": "penguin"
+      },
+      "homepage": "https://github.com/penguin/hs-cli",
+      "repository": "https://github.com/penguin/hs-cli",
+      "license": "MIT",
+      "keywords": ["hearthstone", "cli", "deck", "card", "agent", "bun"],
+      "category": "gaming"
+    }
+  ]
+}
