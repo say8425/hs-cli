@@ -169,10 +169,8 @@ jobs:
       - name: Build
         run: bun run build
 
-      - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: npm publish --access public --provenance
+      - name: Publish to npm (Trusted Publisher / OIDC)
+        run: npm publish --provenance --access public
 
   update-homebrew-tap:
     name: bump homebrew tap
