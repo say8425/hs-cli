@@ -12,7 +12,7 @@
       "description": "Hearthstone deck decoder, card search, and metadata queries via the `hs` CLI",
       "version": "0.4.0",
       "author": {
-        "name": "penguin"
+        "name": "say8425"
       },
       "homepage": "https://github.com/say8425/hs-cli",
       "repository": "https://github.com/say8425/hs-cli",
