@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.1](https://github.com/say8425/hs-cli/compare/v0.3.0...v0.3.1) (2026-05-28)
+
+
+### Documentation
+
+* document Homebrew/npm/binary install channels ([1dc97ec](https://github.com/say8425/hs-cli/commit/1dc97ecd0b588721cdba2525ff1da7cc910673f5))
+* **skill:** rewrite SKILL.md in English with multilingual triggers ([978550a](https://github.com/say8425/hs-cli/commit/978550a4234d6795f6b860a7c883f48a0c240c82))
+
 ## [0.3.0](https://github.com/say8425/hs-cli/compare/v0.2.0...v0.3.0) (2026-05-28)
 
 
