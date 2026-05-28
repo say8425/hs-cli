@@ -192,29 +192,152 @@ Cache the output in working memory for the session — these rarely change.
 
 Multi-step workflows that combine commands or pipe to `jq`. Single-command usage lives in **Command reference**.
 
-### Compare two decks
+These recipes target the questions Hearthstone players actually ask in communities (Reddit /r/hearthstone & /r/CompetitiveHS, 인벤 하스 갤러리, NGA 炉石区, 5ch ハース). Each one is tagged with the colloquial question it answers.
+
+### JSON schema reminder
+
+```text
+hs deck <code> -f json
+{
+  "heroClass": "WARRIOR",          # class code (KO/EN map in table form)
+  "heroDbfId": 7,
+  "format": "standard"|"wild",
+  "cards": [ { "card": { ... }, "count": 1|2 }, ... ]
+}
+
+hs card <id> -f json | jq keys
+# artist, attack, cardClass, collectible, cost, dbfId, flavor, health,
+# id, mechanics[], name, race, rarity, referencedTags[], set, text, type
+```
+
+The deck JSON does NOT include total dust or mana curve — only the `table` format renders those. Compute them with jq when needed (see "Total dust" recipe).
+
+### Compare two decks ("내 덱이랑 이 덱이 뭐가 달라?", "what's different vs the deck I copied?")
 
 ```bash
 hs deck "$A" -f json > /tmp/a.json
 hs deck "$B" -f json > /tmp/b.json
-# Diff card lists programmatically with jq / node / etc.
-diff <(jq -r '.cards[] | "\(.count) \(.name)"' /tmp/a.json | sort) \
-     <(jq -r '.cards[] | "\(.count) \(.name)"' /tmp/b.json | sort)
+diff <(jq -r '.cards[] | "\(.count) \(.card.name)"' /tmp/a.json | sort) \
+     <(jq -r '.cards[] | "\(.count) \(.card.name)"' /tmp/b.json | sort)
 ```
 
-### Identify expensive cards to swap
+### Total dust cost ("dust 얼마 들어요?", "how much dust to craft?")
+
+The deck JSON has rarity but no per-card dust value. Map rarity → craft cost in jq:
 
 ```bash
-hs deck <code> -f json | jq '.cards[] | select(.rarity == "LEGENDARY") | {name, dust}'
+hs deck "$CODE" -f json | jq '
+  def dust:
+    if   . == "LEGENDARY" then 1600
+    elif . == "EPIC"      then 400
+    elif . == "RARE"      then 100
+    else 40 end;
+  [ .cards[] | .count * (.card.rarity | dust) ] | add
+'
 ```
 
-### Suggest replacements at the same cost/class
+### Mana-curve breakdown ("커브 어때?", "is this deck too top-heavy?")
 
 ```bash
-# 1) Inspect target card to learn its class and cost.
-hs card <id> -f json
-# 2) Browse alternatives at that cost + class.
-hs card --search "" --class PRIEST --cost 3
+hs deck "$CODE" -f json | jq '
+  [.cards[] | {cost: .card.cost, count}]
+  | group_by(.cost)
+  | map({cost: .[0].cost, total: (map(.count) | add)})
+'
+```
+
+### Rarity distribution ("이 덱 핀 몇 장?", "legendary count?", "金卡几张?")
+
+```bash
+hs deck "$CODE" -f json | jq '
+  [.cards[] | {r: .card.rarity, n: .count}]
+  | group_by(.r)
+  | map({rarity: .[0].r, count: (map(.n) | add)})
+'
+```
+
+### Spell vs Minion ratio ("주문 위주 덱?", "spell-heavy?")
+
+```bash
+hs deck "$CODE" -f json | jq '
+  [.cards[] | {t: .card.type, n: .count}]
+  | group_by(.t)
+  | map({type: .[0].t, count: (map(.n) | add)})
+'
+```
+
+### Class vs Neutral split ("중립 카드 비중", "are too many neutrals diluting the deck?")
+
+```bash
+hs deck "$CODE" -f json | jq '
+  [.cards[] | {n: .count, neutral: (.card.cardClass == "NEUTRAL")}]
+  | group_by(.neutral)
+  | map({neutral: .[0].neutral, count: (map(.n) | add)})
+'
+```
+
+### Tribe / synergy count ("이 덱 용족 몇 장?", "how many Dragons / Pirates / Murlocs?")
+
+```bash
+TRIBE=DRAGON   # MURLOC, PIRATE, BEAST, DEMON, MECH, ELEMENTAL, UNDEAD, NAGA, QUILBOAR, ALL
+hs deck "$CODE" -f json | jq --arg t "$TRIBE" '
+  [.cards[] | select(.card.race == $t) | {name: .card.name, n: .count}]
+'
+```
+
+### Set distribution & rotation risk ("야생 가는 카드 얼마나?", "what rotates?")
+
+```bash
+hs deck "$CODE" -f json | jq '
+  [.cards[] | {set: .card.set, n: .count}]
+  | group_by(.set)
+  | map({set: .[0].set, count: (map(.n) | add)})
+  | sort_by(-.count)
+'
+```
+
+### Compare two cards stat-for-stat ("이 카드 vs 저 카드 뭐가 나아?", "X or Y in this slot?")
+
+```bash
+for ID in EX1_572 OG_141; do
+  hs card "$ID" -f json | jq '{name, cost, attack, health, type, rarity, text}'
+done
+```
+
+### Find aggro/midrange/control candidates by curve
+
+The CLI doesn't classify archetype directly. Use `--search ""` plus `--class` and `--cost` to enumerate the candidate pool, then build your own curve:
+
+```bash
+for COST in 1 2 3; do
+  hs card --search "" --class ROGUE --cost "$COST" -f json | jq '.[].name'
+done
+```
+
+### Identify expensive cards to swap ("이 덱에서 핀 뭐 빼야 dust 아껴?", "cheapest-craft replacements?")
+
+```bash
+hs deck "$CODE" -f json | jq '
+  .cards[] | select(.card.rarity == "LEGENDARY") | {name: .card.name, count}
+'
+```
+
+### Tribe + class + cost filter ("3코 마법사 용족", "1-cost Pirate Rogue")
+
+`--search ""` returns all candidates at that filter; pipe through jq for tribe:
+
+```bash
+hs card --search "" --class MAGE --cost 3 -f json | jq '
+  .[] | select(.race == "DRAGON") | {name, attack, health, text}
+'
+```
+
+### Spot Unknown / dropped cards ("왜 카드 수가 30 미만이야?", "missing cards?")
+
+When HearthstoneJSON doesn't have a dbfId, the card object shows `name: "Unknown (<id>)"`. Surface them so the user understands the data gap:
+
+```bash
+hs deck "$CODE" -f json | jq '.cards[] | select(.card.type == "UNKNOWN") | .card'
 ```
 
 ### Validate user input before running deeper analysis
@@ -224,14 +347,14 @@ if ! hs deck "$CODE" > /dev/null 2>&1; then
   echo "Invalid deck code"
   exit 1
 fi
-hs deck "$CODE"          # safe to run table summary now
+hs deck "$CODE"          # table summary
 ```
 
-### Resolve a card name when language is ambiguous
+### Resolve a card name across languages ("이게 영어로 뭐?", "English name of 리치 왕?")
 
 ```bash
-# Try English first; fall back to Korean if no match.
-hs card --search "$Q" || hs card --search "$Q_KO"
+hs card --search "리치 왕" -f json | jq '.[0] | {name, id, dbfId}'
+# Use the resolved id/dbfId for any further lookups in the user's prompt language.
 ```
 
 ## Limitations
