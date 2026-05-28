@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.2](https://github.com/say8425/hs-cli/compare/v0.3.1...v0.3.2) (2026-05-28)
+
+
+### Documentation
+
+* **skill:** cover full CLI surface and add multilingual nicknames ([0aac65c](https://github.com/say8425/hs-cli/commit/0aac65c58e28c4142c064ff09c4cc263f4dfca32))
+* **skill:** expand class-name table to 9 languages with community slang ([e909ebd](https://github.com/say8425/hs-cli/commit/e909ebd03ad72301b1dc8c05a3e24dd01c9575b2))
+* **skill:** expand Recipes with community-research workflows ([d4c5532](https://github.com/say8425/hs-cli/commit/d4c553245c5fd29a9e09a602701ae57b711de911))
+* **skill:** tighten Command reference vs Recipes split ([519839a](https://github.com/say8425/hs-cli/commit/519839a21ed5d8479b19b845ab184e2f433ae61b))
+
 ## [0.3.1](https://github.com/say8425/hs-cli/compare/v0.3.0...v0.3.1) (2026-05-28)
 
 

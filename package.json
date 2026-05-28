@@ -1,6 +1,6 @@
 {
   "name": "@say8425/hs-cli",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Hearthstone CLI for AI agents and humans",
   "type": "module",
   "bin": {
