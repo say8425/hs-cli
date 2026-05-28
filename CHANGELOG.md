@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.3.0](https://github.com/say8425/hs-cli/compare/v0.2.0...v0.3.0) (2026-05-28)
+
+
+### Features
+
+* run on Node so npm-installed users don't need Bun ([7b94a26](https://github.com/say8425/hs-cli/commit/7b94a2664050b916ac9f0a493374453ee277409e))
+
+
+### Bug Fixes
+
+* read CLI version from package.json so release-please bumps it ([a1f0ff2](https://github.com/say8425/hs-cli/commit/a1f0ff2262b472cbc99f2c13f15118b9620cf936))
+
+
+### Documentation
+
+* render English deck output and search queries in English ([5a2e419](https://github.com/say8425/hs-cli/commit/5a2e4190f0762478c126b7b883544444faca79ba))
+
 ## [0.2.0](https://github.com/say8425/hs-cli/compare/v0.1.0...v0.2.0) (2026-05-28)
 
 
