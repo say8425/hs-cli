@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.3](https://github.com/say8425/hs-cli/compare/v0.3.2...v0.3.3) (2026-05-28)
+
+
+### Documentation
+
+* **skill:** add Recipes that use hs meta and card mechanics ([1548d6f](https://github.com/say8425/hs-cli/commit/1548d6fbf48415913b8cbc43f59db2c024b6bd43))
+* **skill:** more community-driven recipes + fix empty-search trap ([38bbe95](https://github.com/say8425/hs-cli/commit/38bbe95988a7a0deb25b93f5ea42500d8a96d6d2))
+
 ## [0.3.2](https://github.com/say8425/hs-cli/compare/v0.3.1...v0.3.2) (2026-05-28)
 
 
