@@ -83,8 +83,8 @@ hs card --search "리치 왕" -f json | jq '.[].dbfId'
 이 저장소는 **Claude Code 마켓플레이스** 역할도 합니다. [`hs-cli` 플러그인](./plugins/hs-cli/)을 한 번 설치하면 Claude Code가 CLI 사용법을 익혀 자동으로 호출합니다:
 
 ```
-/plugin marketplace add penguin/hs-cli
-/plugin install hs-cli@penguin-tools
+/plugin marketplace add say8425/hs-cli
+/plugin install hs-cli@say8425
 ```
 
 로컬 개발용:

@@ -83,8 +83,8 @@ hs card --search "巫妖王" -f json | jq '.[].dbfId'
 本仓库同时是一个 **Claude Code 市场**,提供 [`hs-cli` 插件](./plugins/hs-cli/)。安装一次后 Claude Code 就会学会自动调用 CLI:
 
 ```
-/plugin marketplace add penguin/hs-cli
-/plugin install hs-cli@penguin-tools
+/plugin marketplace add say8425/hs-cli
+/plugin install hs-cli@say8425
 ```
 
 本地开发:

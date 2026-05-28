@@ -83,8 +83,8 @@ hs card --search "Rey Exánime" -f json | jq '.[].dbfId'
 Este repositorio también funciona como **marketplace de Claude Code** y expone el [plugin `hs-cli`](./plugins/hs-cli/). Instálalo una vez y Claude Code aprenderá a usar el CLI automáticamente:
 
 ```
-/plugin marketplace add penguin/hs-cli
-/plugin install hs-cli@penguin-tools
+/plugin marketplace add say8425/hs-cli
+/plugin install hs-cli@say8425
 ```
 
 Para desarrollo local:

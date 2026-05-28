@@ -43,7 +43,7 @@ plugins/hs-cli/
 └── skills/hearthstone-deck/SKILL.md    # the skill itself, namespace hs-cli:hearthstone-deck
 ```
 
-Install flow for end users: clone repo + `bun link` for the CLI, then `/plugin marketplace add penguin/hs-cli` + `/plugin install hs-cli@penguin-tools` for the skill. Validate with `claude plugin validate .` (marketplace) or `claude plugin validate ./plugins/hs-cli` (plugin).
+Install flow for end users: clone repo + `bun link` for the CLI, then `/plugin marketplace add say8425/hs-cli` + `/plugin install hs-cli@say8425` for the skill. Validate with `claude plugin validate .` (marketplace) or `claude plugin validate ./plugins/hs-cli` (plugin).
 
 **Do not duplicate SKILL.md at the repo root.** The single source of truth lives inside the plugin. Root-level docs should link to it, not copy it.
 

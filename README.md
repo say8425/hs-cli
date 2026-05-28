@@ -90,8 +90,8 @@ hs card --search "리치 왕" -f json | jq '.[].dbfId'
 This repo doubles as a **Claude Code marketplace** that exposes the [`hs-cli` plugin](./plugins/hs-cli/). Install it once and Claude Code learns to drive the CLI for you:
 
 ```
-/plugin marketplace add penguin/hs-cli
-/plugin install hs-cli@penguin-tools
+/plugin marketplace add say8425/hs-cli
+/plugin install hs-cli@say8425
 ```
 
 For local development:

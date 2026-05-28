@@ -83,8 +83,8 @@ hs card --search "リッチキング" -f json | jq '.[].dbfId'
 このリポジトリは **Claude Code マーケットプレイス** も兼ねており、[`hs-cli` プラグイン](./plugins/hs-cli/) を提供します。一度インストールすれば Claude Code が CLI の使い方を学習して自動で呼び出します:
 
 ```
-/plugin marketplace add penguin/hs-cli
-/plugin install hs-cli@penguin-tools
+/plugin marketplace add say8425/hs-cli
+/plugin install hs-cli@say8425
 ```
 
 ローカル開発用:

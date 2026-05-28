@@ -1,6 +1,6 @@
 # hs-cli plugin
 
-Claude Code plugin that wraps the [`hs` CLI](https://github.com/penguin/hs-cli) for Hearthstone deck and card analysis.
+Claude Code plugin that wraps the [`hs` CLI](https://github.com/say8425/hs-cli) for Hearthstone deck and card analysis.
 
 ## What this plugin gives Claude
 
@@ -18,7 +18,7 @@ The skill auto-triggers when the user pastes a deck code, asks "이 덱 분석�
 The skill is a **wrapper around the `hs` binary**, not a self-contained tool. You must install the CLI separately:
 
 ```bash
-git clone https://github.com/penguin/hs-cli.git
+git clone https://github.com/say8425/hs-cli.git
 cd hs-cli
 bun install
 bun run build
@@ -39,8 +39,8 @@ hs deck "AAECAQcAA0VjgAEAAA=="
 From the marketplace:
 
 ```
-/plugin marketplace add penguin/hs-cli
-/plugin install hs-cli@penguin-tools
+/plugin marketplace add say8425/hs-cli
+/plugin install hs-cli@say8425
 ```
 
 Or test locally during development:

@@ -1,5 +1,5 @@
 {
-  "name": "@penguin/hs-cli",
+  "name": "@say8425/hs-cli",
   "version": "0.1.0",
   "description": "Hearthstone CLI for AI agents and humans",
   "type": "module",

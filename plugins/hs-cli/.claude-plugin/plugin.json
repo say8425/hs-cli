@@ -7,8 +7,8 @@
     "name": "penguin",
     "email": "cheon.park@musinsa.com"
   },
-  "homepage": "https://github.com/penguin/hs-cli",
-  "repository": "https://github.com/penguin/hs-cli",
+  "homepage": "https://github.com/say8425/hs-cli",
+  "repository": "https://github.com/say8425/hs-cli",
   "license": "MIT",
   "keywords": ["hearthstone", "cli", "deck", "card", "battlegrounds", "bun"]
 }

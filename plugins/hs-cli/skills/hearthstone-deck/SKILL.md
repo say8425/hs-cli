@@ -9,7 +9,7 @@ description: Use when the user wants to inspect, compare, or analyze Hearthstone
 This skill requires the `hs` CLI binary on PATH. Install it once with Bun before using the skill:
 
 ```bash
-git clone https://github.com/penguin/hs-cli.git
+git clone https://github.com/say8425/hs-cli.git
 cd hs-cli && bun install && bun run build && bun link
 hs --version    # verify
 ```
