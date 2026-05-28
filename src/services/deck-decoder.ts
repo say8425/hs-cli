@@ -7,12 +7,16 @@ import {
   type Deck,
   type DeckCard,
   type DeckFormat,
-} from "../types/index.js";
-import { loadCards } from "./card-db.js";
+} from "../types/index.ts";
+import { loadCards } from "./card-db.ts";
+import { DEFAULT_LOCALE, type Locale } from "./locale.ts";
 
-export const decodeDeck = async (deckCode: string): Promise<Deck> => {
+export const decodeDeck = async (
+  deckCode: string,
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<Deck> => {
   const decoded = decode(deckCode);
-  const cards = await loadCards();
+  const cards = await loadCards(locale);
   const dbfMap = new Map<number, Card>();
   for (const card of cards) {
     dbfMap.set(card.dbfId, card);

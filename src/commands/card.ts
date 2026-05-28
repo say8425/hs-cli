@@ -1,5 +1,6 @@
 import { defineCommand } from "citty";
 import { findCardByDbfId, findCardById, searchCards } from "../services/card-db.ts";
+import { resolveLocale } from "../services/locale.ts";
 import { formatCard, formatCardList } from "../services/formatter.ts";
 import type { OutputFormat } from "../types/index.ts";
 
@@ -33,13 +34,21 @@ export const cardCommand = defineCommand({
       default: "table",
       description: "Output format: table or json",
     },
+    locale: {
+      type: "string",
+      alias: "l",
+      description:
+        "HearthstoneJSON locale (e.g. enUS, koKR, jaJP). Auto-detected from $LANG when omitted.",
+    },
   },
   run: async ({ args }) => {
     const format = args.format as OutputFormat;
 
     try {
+      const locale = resolveLocale(args.locale);
+
       if (args.search) {
-        let results = await searchCards(args.search);
+        let results = await searchCards(args.search, locale);
         if (args.class) {
           const cls = args.class.toUpperCase();
           results = results.filter((c) => c.cardClass === cls);
@@ -60,8 +69,8 @@ export const cardCommand = defineCommand({
 
       const numId = Number.parseInt(query, 10);
       const card = Number.isNaN(numId)
-        ? ((await findCardById(query)) ?? (await searchCards(query))[0])
-        : await findCardByDbfId(numId);
+        ? ((await findCardById(query, locale)) ?? (await searchCards(query, locale))[0])
+        : await findCardByDbfId(numId, locale);
 
       if (!card) {
         process.stderr.write(`Card not found: ${query}\n`);

@@ -1,5 +1,6 @@
 import { defineCommand } from "citty";
 import { getMetadata } from "../services/card-db.ts";
+import { resolveLocale } from "../services/locale.ts";
 import { formatMeta } from "../services/formatter.ts";
 import type { OutputFormat } from "../types/index.ts";
 
@@ -23,6 +24,12 @@ export const metaCommand = defineCommand({
       default: "table",
       description: "Output format: table or json",
     },
+    locale: {
+      type: "string",
+      alias: "l",
+      description:
+        "HearthstoneJSON locale (e.g. enUS, koKR, jaJP). Auto-detected from $LANG when omitted.",
+    },
   },
   run: async ({ args }) => {
     const format = args.format as OutputFormat;
@@ -34,7 +41,8 @@ export const metaCommand = defineCommand({
     }
 
     try {
-      const values = await getMetadata(type as MetaType);
+      const locale = resolveLocale(args.locale);
+      const values = await getMetadata(type as MetaType, locale);
       process.stdout.write(`${formatMeta(type, values, format)}\n`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);

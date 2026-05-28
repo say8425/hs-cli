@@ -49,13 +49,18 @@ describe("findCardById", () => {
 });
 
 describe("searchCards", () => {
-  it("finds cards by name substring", async () => {
-    const results = await searchCards("질리악스");
+  it("finds Korean cards by name substring (koKR locale)", async () => {
+    const results = await searchCards("질리악스", "koKR");
+    expect(results.length).toBeGreaterThan(0);
+  });
+
+  it("finds English cards by name substring (default locale)", async () => {
+    const results = await searchCards("Zilliax");
     expect(results.length).toBeGreaterThan(0);
   });
 
   it("filters out non-collectible by default", async () => {
-    const results = await searchCards("질리악스");
+    const results = await searchCards("Zilliax");
     for (const card of results) {
       expect(card.collectible).toBe(true);
     }

@@ -2,62 +2,80 @@ import { readFile, writeFile, mkdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import type { Card } from "../types/index.js";
+import type { Card } from "../types/index.ts";
+import { DEFAULT_LOCALE, type Locale } from "./locale.ts";
 
 const CACHE_DIR = join(homedir(), ".hs-cli");
-const CACHE_FILE = join(CACHE_DIR, "cards-all.json");
-const CACHE_META = join(CACHE_DIR, "cards.meta.json");
-const CDN_URL = "https://api.hearthstonejson.com/v1/latest/koKR/cards.json";
 const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
+
+const cacheFileFor = (locale: Locale): string => join(CACHE_DIR, `cards-${locale}.json`);
+const cacheMetaFor = (locale: Locale): string => join(CACHE_DIR, `cards-${locale}.meta.json`);
+const cdnUrlFor = (locale: Locale): string =>
+  `https://api.hearthstonejson.com/v1/latest/${locale}/cards.json`;
 
 interface CacheMeta {
   readonly fetchedAt: number;
 }
 
-const isCacheValid = async (): Promise<boolean> => {
-  if (!existsSync(CACHE_FILE) || !existsSync(CACHE_META)) return false;
-  const raw = await readFile(CACHE_META, "utf-8");
-  const meta: CacheMeta = JSON.parse(raw);
-  return Date.now() - meta.fetchedAt < CACHE_TTL_MS;
+const isCacheValid = async (locale: Locale): Promise<boolean> => {
+  const file = cacheFileFor(locale);
+  const meta = cacheMetaFor(locale);
+  if (!existsSync(file) || !existsSync(meta)) return false;
+  const raw = await readFile(meta, "utf-8");
+  const parsed: CacheMeta = JSON.parse(raw);
+  return Date.now() - parsed.fetchedAt < CACHE_TTL_MS;
 };
 
-const fetchAndCache = async (): Promise<readonly Card[]> => {
-  const res = await fetch(CDN_URL);
+const fetchAndCache = async (locale: Locale): Promise<readonly Card[]> => {
+  const res = await fetch(cdnUrlFor(locale));
   if (!res.ok) throw new Error(`HearthstoneJSON fetch failed: ${res.status}`);
   const cards = (await res.json()) as readonly Card[];
   await mkdir(CACHE_DIR, { recursive: true });
-  await writeFile(CACHE_FILE, JSON.stringify(cards));
+  await writeFile(cacheFileFor(locale), JSON.stringify(cards));
   const meta: CacheMeta = { fetchedAt: Date.now() };
-  await writeFile(CACHE_META, JSON.stringify(meta));
+  await writeFile(cacheMetaFor(locale), JSON.stringify(meta));
   return cards;
 };
 
-let cardCache: readonly Card[] | null = null;
+const cardCacheByLocale = new Map<Locale, readonly Card[]>();
 
-export const loadCards = async (): Promise<readonly Card[]> => {
-  if (cardCache) return cardCache;
-  if (await isCacheValid()) {
-    const raw = await readFile(CACHE_FILE, "utf-8");
-    cardCache = JSON.parse(raw) as readonly Card[];
-    return cardCache;
+export const loadCards = async (locale: Locale = DEFAULT_LOCALE): Promise<readonly Card[]> => {
+  const cached = cardCacheByLocale.get(locale);
+  if (cached) return cached;
+  if (await isCacheValid(locale)) {
+    const raw = await readFile(cacheFileFor(locale), "utf-8");
+    const cards = JSON.parse(raw) as readonly Card[];
+    cardCacheByLocale.set(locale, cards);
+    return cards;
   }
-  process.stderr.write("Fetching card data from HearthstoneJSON...\n");
-  cardCache = await fetchAndCache();
-  return cardCache;
+  process.stderr.write(`Fetching card data from HearthstoneJSON (${locale})...\n`);
+  const cards = await fetchAndCache(locale);
+  cardCacheByLocale.set(locale, cards);
+  return cards;
 };
 
-export const findCardByDbfId = async (dbfId: number): Promise<Card | undefined> => {
-  const cards = await loadCards();
+export const findCardByDbfId = async (
+  dbfId: number,
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<Card | undefined> => {
+  const cards = await loadCards(locale);
   return cards.find((c) => c.dbfId === dbfId);
 };
 
-export const findCardById = async (id: string): Promise<Card | undefined> => {
-  const cards = await loadCards();
+export const findCardById = async (
+  id: string,
+  locale: Locale = DEFAULT_LOCALE,
+): Promise<Card | undefined> => {
+  const cards = await loadCards(locale);
   return cards.find((c) => c.id === id);
 };
 
-export const searchCards = async (query: string, includeAll = false): Promise<readonly Card[]> => {
-  const cards = await loadCards();
+export const searchCards = async (
+  query: string,
+  locale: Locale = DEFAULT_LOCALE,
+  includeAll = false,
+): Promise<readonly Card[]> => {
+  const cards = await loadCards(locale);
   const lower = query.toLowerCase();
   return cards.filter(
     (c) =>
@@ -68,8 +86,9 @@ export const searchCards = async (query: string, includeAll = false): Promise<re
 
 export const getMetadata = async (
   type: "sets" | "classes" | "types" | "rarities",
+  locale: Locale = DEFAULT_LOCALE,
 ): Promise<readonly string[]> => {
-  const cards = await loadCards();
+  const cards = await loadCards(locale);
   const key = {
     sets: "set",
     classes: "cardClass",
