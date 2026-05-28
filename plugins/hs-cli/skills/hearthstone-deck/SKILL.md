@@ -217,9 +217,14 @@ hs deck <code> -f json
 hs card <id> -f json | jq keys
 # artist, attack, cardClass, collectible, cost, dbfId, flavor, health,
 # id, mechanics[], name, race, rarity, referencedTags[], set, text, type
+
+hs meta <type> -f json
+{ "type": "sets"|"classes"|"types"|"rarities", "values": [ "...", ... ] }
 ```
 
 The deck JSON does NOT include total dust or mana curve — only the `table` format renders those. Compute them with jq when needed (see "Total dust" recipe).
+
+`hs meta` returns raw enum codes (English). The CLI does not embed a Standard / Wild rotation tag, dust cost, or localized labels — these come from the table in the Class names / Game modes / Common community shorthand sections above, or from official Blizzard rotation pages.
 
 ### Compare two decks ("내 덱이랑 이 덱이 뭐가 달라?", "what's different vs the deck I copied?")
 
@@ -364,6 +369,106 @@ hs deck "$CODE"          # table summary
 ```bash
 hs card --search "리치 왕" -f json | jq '.[0] | {name, id, dbfId}'
 # Use the resolved id/dbfId for any further lookups in the user's prompt language.
+```
+
+### Normalize user-provided class to a valid `--class` code ("법사 카드 뽑아줘", "show me Lock cards", "术士牌")
+
+The user types a class in their language or slang. Validate with `hs meta classes` before passing to `--class`, and fall back to the multilingual class table in this skill for translation.
+
+```bash
+USER_CLASS="법사"                       # could be Lock, 法师, Mage, パラ, etc.
+# Step 1: translate via the class table in this SKILL (above) -> e.g. "법사" -> MAGE
+CLASS_CODE="MAGE"
+# Step 2: verify it is a valid CLI filter value
+if hs meta classes -f json | jq -e --arg c "$CLASS_CODE" '.values | index($c)' > /dev/null; then
+  hs card --search "" --class "$CLASS_CODE"
+else
+  echo "Invalid class code"; hs meta classes
+fi
+```
+
+### Mechanic / keyword breakdown of a deck ("이 덱 도발/은신/속공 몇 장?", "How many Battlecry / Deathrattle minions?")
+
+Mechanics live on each card object as an array. Aggregate them across the deck:
+
+```bash
+hs deck "$CODE" -f json | jq '
+  [.cards[] | (.card.mechanics // []) | .[] as $m | {mech: $m, count: $count // 1}]
+'
+# Compact version: how many copies of each mechanic appear
+hs deck "$CODE" -f json | jq '
+  [ .cards[] as $c | ($c.card.mechanics // []) | .[] | {mech: ., n: $c.count} ]
+  | group_by(.mech)
+  | map({mech: .[0].mech, total: (map(.n) | add)})
+  | sort_by(-.total)
+'
+```
+
+Common mechanics in card data: `BATTLECRY`, `DEATHRATTLE`, `RUSH`, `CHARGE`, `TAUNT`, `STEALTH`, `DIVINE_SHIELD`, `LIFESTEAL`, `WINDFURY`, `POISONOUS`, `SECRET`, `OVERLOAD`, `COMBO`, `INSPIRE`, `SPELL_POWER`. Korean community labels: 전투의 함성 / 죽음의 메아리 / 속공 / 돌진 / 도발 / 은신 / 천상의 보호막 / 생명력 흡수.
+
+### Build a dust cheat-sheet from `hs meta rarities`
+
+`hs meta rarities` enumerates the rarity tier codes; dust values come from community knowledge (no CLI source for them). Useful when displaying rarity → craft cost together:
+
+```bash
+hs meta rarities -f json | jq -r '
+  .values[] |
+  (if   . == "LEGENDARY" then [., 1600]
+   elif . == "EPIC"      then [., 400]
+   elif . == "RARE"      then [., 100]
+   else                       [., 40] end)
+  | "\(.[0]): \(.[1]) dust"
+'
+```
+
+### List play-relevant card types only ("어떤 type 있어?", "Battlegrounds 카드 빼고")
+
+`hs meta types` includes Battlegrounds-internal, Mercenaries, and editor-mode codes that never appear in a constructed deck. Filter to the codes a deck-analysis agent actually cares about:
+
+```bash
+hs meta types -f json | jq -r '
+  .values[] | select(test("BATTLEGROUND|LETTUCE|MOVE_MINION|GAME_MODE|PET") | not)
+'
+# Yields: ENCHANTMENT, HERO, HERO_POWER, LOCATION, MINION, SPELL, WEAPON.
+# For a "what's in this deck?" answer, only MINION / SPELL / WEAPON / LOCATION matter.
+```
+
+### Latest expansion / which set is a card from ("최근 확장팩이 뭐였더라?", "is this card new?")
+
+The CLI does NOT tag sets with Standard / Wild membership or release date. Workarounds:
+
+```bash
+# All set codes (raw enum, alphabetical):
+hs meta sets
+
+# Set of a specific card (the card object carries it):
+hs card EX1_572 -f json | jq .set       # -> "EXPERT1"
+
+# Per-deck set distribution (see "Set distribution & rotation risk" recipe above).
+```
+
+For "is this set in Standard right now?", point the user to the official Blizzard rotation page — that data is not in the CLI.
+
+### Recognize a deck's archetype from card text + mechanics ("이거 미라클인가 도적 OTK?", "Aggro Pirate Rogue or Tempo Rogue?")
+
+The CLI doesn't classify archetypes. Approximate by sampling cards and checking signals:
+
+```bash
+hs deck "$CODE" -f json | jq '
+  {
+    avg_cost: ([.cards[] | .card.cost * .count] | add) / 30,
+    pirate_count: ([.cards[] | select(.card.race == "PIRATE") | .count] | add // 0),
+    dragon_count: ([.cards[] | select(.card.race == "DRAGON") | .count] | add // 0),
+    has_taunt: ([.cards[] | select((.card.mechanics // []) | index("TAUNT"))] | length > 0),
+    has_secret: ([.cards[] | select((.card.mechanics // []) | index("SECRET"))] | length > 0),
+    big_cards: [.cards[] | select(.card.cost >= 7) | {name: .card.name, cost: .card.cost, n: .count}]
+  }
+'
+# Interpretation rules of thumb:
+#   avg_cost < 2.7   -> Aggro
+#   2.7 <= avg < 3.5 -> Midrange / Tempo
+#   avg_cost >= 3.5  -> Control
+#   pirate_count >= 6 or dragon_count >= 6 -> tribe-themed
 ```
 
 ## Limitations
