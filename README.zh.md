@@ -2,6 +2,15 @@
 
 [English](./README.md) · [한국어](./README.ko.md) · [日本語](./README.ja.md) · **中文** · [Español](./README.es.md)
 
+[![CI](https://github.com/say8425/hs-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/say8425/hs-cli/actions/workflows/ci.yml)
+[![Release](https://github.com/say8425/hs-cli/actions/workflows/release.yml/badge.svg)](https://github.com/say8425/hs-cli/actions/workflows/release.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat)](https://github.com/say8425/hs-cli/blob/main/LICENSE)
+[![Bun](https://img.shields.io/badge/Bun_1.3-000000?style=flat&logo=bun&logoColor=white)](https://bun.sh)
+[![TypeScript](https://img.shields.io/badge/TypeScript_6-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![citty](https://img.shields.io/badge/citty-1B6FEE?style=flat&logo=unjs&logoColor=white)](https://github.com/unjs/citty)
+[![oxlint](https://img.shields.io/badge/oxlint-CB2435?style=flat)](https://oxc.rs)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-D77757?style=flat&logo=anthropic&logoColor=white)](https://code.claude.com)
+
 > 面向 AI 代理与人类的炉石传说 CLI。解码套牌代码、查询卡牌、检索元数据 — 无需 API key。基于 **Bun**。
 
 `hs-cli` 是一个快速、对代理友好的命令行工具,封装了公开的 [HearthstoneJSON](https://hearthstonejson.com/) 数据源和 `deckstrings` 库,提供可离线工作的炉石传说套牌与卡牌数据。输出针对人类和 LLM 代理(Claude Code、Codex 等)的可读性进行了优化,不会用原始 JSON 浪费 token。

@@ -2,6 +2,15 @@
 
 [English](./README.md) · **한국어** · [日本語](./README.ja.md) · [中文](./README.zh.md) · [Español](./README.es.md)
 
+[![CI](https://github.com/say8425/hs-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/say8425/hs-cli/actions/workflows/ci.yml)
+[![Release](https://github.com/say8425/hs-cli/actions/workflows/release.yml/badge.svg)](https://github.com/say8425/hs-cli/actions/workflows/release.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat)](https://github.com/say8425/hs-cli/blob/main/LICENSE)
+[![Bun](https://img.shields.io/badge/Bun_1.3-000000?style=flat&logo=bun&logoColor=white)](https://bun.sh)
+[![TypeScript](https://img.shields.io/badge/TypeScript_6-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![citty](https://img.shields.io/badge/citty-1B6FEE?style=flat&logo=unjs&logoColor=white)](https://github.com/unjs/citty)
+[![oxlint](https://img.shields.io/badge/oxlint-CB2435?style=flat)](https://oxc.rs)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-D77757?style=flat&logo=anthropic&logoColor=white)](https://code.claude.com)
+
 > AI 에이전트와 사람을 위한 하스스톤 CLI. 덱 코드 디코딩, 카드 조회, 메타데이터 검색 — API 키 불필요. **Bun** 기반.
 
 `hs-cli`는 공개된 [HearthstoneJSON](https://hearthstonejson.com/) 데이터 소스와 `deckstrings` 라이브러리를 감싸 오프라인에서도 동작하는 빠른 에이전트 친화 CLI 도구입니다. 출력은 사람과 LLM 에이전트(Claude Code, Codex 등) 둘 다 읽기 좋게 설계되어, raw JSON으로 토큰을 낭비하지 않습니다.

@@ -2,6 +2,15 @@
 
 **English** · [한국어](./README.ko.md) · [日本語](./README.ja.md) · [中文](./README.zh.md) · [Español](./README.es.md)
 
+[![CI](https://github.com/say8425/hs-cli/actions/workflows/ci.yml/badge.svg)](https://github.com/say8425/hs-cli/actions/workflows/ci.yml)
+[![Release](https://github.com/say8425/hs-cli/actions/workflows/release.yml/badge.svg)](https://github.com/say8425/hs-cli/actions/workflows/release.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow?style=flat)](https://github.com/say8425/hs-cli/blob/main/LICENSE)
+[![Bun](https://img.shields.io/badge/Bun_1.3-000000?style=flat&logo=bun&logoColor=white)](https://bun.sh)
+[![TypeScript](https://img.shields.io/badge/TypeScript_6-3178C6?style=flat&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![citty](https://img.shields.io/badge/citty-1B6FEE?style=flat&logo=unjs&logoColor=white)](https://github.com/unjs/citty)
+[![oxlint](https://img.shields.io/badge/oxlint-CB2435?style=flat)](https://oxc.rs)
+[![Claude Code](https://img.shields.io/badge/Claude_Code-Plugin-D77757?style=flat&logo=anthropic&logoColor=white)](https://code.claude.com)
+
 > Hearthstone CLI for AI agents and humans. Decode deck codes, look up cards, query metadata — no API key required. Built on **Bun**.
 
 `hs-cli` is a fast, agent-friendly command-line tool that wraps the public [HearthstoneJSON](https://hearthstonejson.com/) data source and the `deckstrings` library to give you offline-capable Hearthstone deck and card data. Output is designed to be readable by both humans and LLM agents (Claude Code, Codex, etc.) without burning tokens on raw JSON.
@@ -104,11 +113,11 @@ The plugin ships the [`hearthstone-deck` skill](./plugins/hs-cli/skills/hearthst
 
 Then ask your agent things like:
 
-> "이 덱 분석해줘: AAECAQcAA0VjgAEAAA=="
+> "Analyze this deck: AAECAQcAA0VjgAEAAA=="
 >
-> "두 덱의 공통 카드를 찾아줘"
+> "Find the cards that overlap between these two decks"
 >
-> "사제 직업으로 마나 3 카드 추천해줘"
+> "Recommend 3-mana cards for Priest"
 
 The skill teaches the agent:
 
