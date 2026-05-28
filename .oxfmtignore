@@ -1,0 +1,5 @@
+dist/
+node_modules/
+.omc/
+*.log
+~/.hs-cli/

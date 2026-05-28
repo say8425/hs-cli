@@ -1,0 +1,44 @@
+{
+  "name": "@penguin/hs-cli",
+  "version": "0.1.0",
+  "description": "Hearthstone CLI for AI agents and humans",
+  "type": "module",
+  "bin": {
+    "hs": "./dist/index.js"
+  },
+  "scripts": {
+    "dev": "bun run src/index.ts",
+    "build": "bun build src/index.ts --target=bun --outdir=dist --minify",
+    "start": "bun run dist/index.js",
+    "test": "bun test",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix",
+    "fmt": "oxfmt src tests",
+    "fmt:check": "oxfmt src tests --check",
+    "typecheck": "tsc --noEmit",
+    "check": "bun lint && bun fmt:check && bun typecheck && bun test"
+  },
+  "keywords": [
+    "hearthstone",
+    "cli",
+    "battlenet",
+    "deck",
+    "agent",
+    "bun"
+  ],
+  "author": "penguin",
+  "license": "MIT",
+  "engines": {
+    "bun": ">=1.3"
+  },
+  "dependencies": {
+    "citty": "^0.1.6",
+    "deckstrings": "^3.1.2"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "oxfmt": "^0.52.0",
+    "oxlint": "^1.67.0",
+    "typescript": "^6.0.3"
+  }
+}

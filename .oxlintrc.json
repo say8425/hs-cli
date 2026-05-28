@@ -1,0 +1,63 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript", "unicorn", "oxc", "import", "node", "promise"],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "error",
+    "pedantic": "off",
+    "style": "off",
+    "restriction": "off",
+    "nursery": "off"
+  },
+  "env": {
+    "node": true,
+    "es2024": true
+  },
+  "rules": {
+    "prefer-arrow-callback": ["error", { "allowNamedFunctions": false }],
+    "func-style": ["error", "expression", { "allowArrowFunctions": true }],
+    "arrow-body-style": ["error", "as-needed"],
+    "no-console": ["error", { "allow": ["error", "warn"] }],
+    "eqeqeq": ["error", "always"],
+    "no-var": "error",
+    "prefer-const": "error",
+    "no-unused-vars": ["error", { "argsIgnorePattern": "^_", "varsIgnorePattern": "^_" }],
+    "no-throw-literal": "error",
+    "no-param-reassign": ["error", { "props": true }],
+    "prefer-template": "error",
+    "no-implicit-coercion": "error",
+    "object-shorthand": "error",
+    "no-nested-ternary": "error",
+    "no-await-in-loop": "warn",
+    "no-promise-executor-return": "error",
+
+    "typescript/no-explicit-any": "error",
+    "typescript/no-non-null-assertion": "warn",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
+    "typescript/prefer-as-const": "error",
+    "typescript/no-inferrable-types": "error",
+    "typescript/array-type": ["error", { "default": "array-simple" }],
+
+    "unicorn/prefer-node-protocol": "error",
+    "unicorn/prefer-array-some": "error",
+    "unicorn/prefer-includes": "error",
+    "unicorn/prefer-string-starts-ends-with": "error",
+    "unicorn/prefer-string-replace-all": "error",
+    "unicorn/no-useless-undefined": "error",
+    "unicorn/throw-new-error": "error",
+    "unicorn/error-message": "error",
+    "unicorn/filename-case": ["error", { "case": "kebabCase" }],
+    "unicorn/no-abusive-eslint-disable": "error",
+    "unicorn/switch-case-braces": "off",
+    "unicorn/no-null": "off",
+
+    "import/no-duplicates": "error",
+    "import/no-cycle": "error",
+
+    "promise/no-return-wrap": "error",
+    "promise/param-names": "error"
+  },
+  "ignorePatterns": ["dist/**", "node_modules/**", "*.config.js", "*.config.ts"]
+}
