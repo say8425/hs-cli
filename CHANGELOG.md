@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.0](https://github.com/say8425/hs-cli/compare/v0.3.3...v0.4.0) (2026-05-28)
+
+
+### Features
+
+* --locale flag and 14-locale support, default enUS ([a37046b](https://github.com/say8425/hs-cli/commit/a37046b3eeb993747677ae881c1717b853e587de))
+
+
+### Documentation
+
+* document --locale across READMEs, SKILL, CLAUDE.md ([8654bd4](https://github.com/say8425/hs-cli/commit/8654bd4ec058ac4eb2368e137ed234f6c27e5ec7))
+
 ## [0.3.3](https://github.com/say8425/hs-cli/compare/v0.3.2...v0.3.3) (2026-05-28)
 
 
