@@ -1,4 +1,5 @@
-import { readFile } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "bun:test";
 import {
@@ -8,6 +9,11 @@ import {
   type AgentDef,
 } from "../src/services/agent-dirs.ts";
 import { SKILL_BUNDLE, SKILL_NAME } from "../src/services/skill-bundle.ts";
+import {
+  skillExists,
+  targetSkillDir,
+  writeBundle,
+} from "../src/services/skill-installer.ts";
 
 const byId = (id: string): AgentDef => {
   const a = AGENTS.find((x) => x.id === id);
@@ -75,6 +81,42 @@ describe("skill-bundle", () => {
     );
     for (const { f, disk } of pairs) {
       expect(f.contents).toBe(disk);
+    }
+  });
+});
+
+describe("skill-installer", () => {
+  it("targets <baseDir>/hearthstone-deck", () => {
+    expect(targetSkillDir("/base")).toBe("/base/hearthstone-deck");
+  });
+
+  it("reports non-existence then existence after writing", async () => {
+    const base = await mkdtemp(join(tmpdir(), "hs-skill-"));
+    try {
+      expect(await skillExists(base)).toBe(false);
+      await writeBundle(base);
+      expect(await skillExists(base)).toBe(true);
+    } finally {
+      await rm(base, { recursive: true, force: true });
+    }
+  });
+
+  it("writes SKILL.md and all recipes with correct content, idempotently", async () => {
+    const base = await mkdtemp(join(tmpdir(), "hs-skill-"));
+    try {
+      await writeBundle(base);
+      await writeBundle(base); // overwrite must not throw
+      const skillPath = join(base, "hearthstone-deck", "SKILL.md");
+      const recipePath = join(base, "hearthstone-deck", "recipes", "deck.md");
+      await stat(skillPath); // throws if missing
+      const disk = await readFile(
+        join("plugins/hs-cli/skills/hearthstone-deck", "SKILL.md"),
+        "utf8",
+      );
+      expect(await readFile(skillPath, "utf8")).toBe(disk);
+      await stat(recipePath);
+    } finally {
+      await rm(base, { recursive: true, force: true });
     }
   });
 });
