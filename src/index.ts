@@ -4,6 +4,7 @@ import pkg from "../package.json" with { type: "json" };
 import { cardCommand } from "./commands/card.ts";
 import { deckCommand } from "./commands/deck.ts";
 import { metaCommand } from "./commands/meta.ts";
+import { skillCommand } from "./commands/skill.ts";
 
 const main = defineCommand({
   meta: {
@@ -15,6 +16,7 @@ const main = defineCommand({
     deck: deckCommand,
     card: cardCommand,
     meta: metaCommand,
+    skill: skillCommand,
   },
 });
 
