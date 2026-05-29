@@ -12,8 +12,17 @@ concurrency:
 
 jobs:
   check:
-    name: lint + fmt + typecheck + test
+    name: ${{ matrix.task.name }}
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        task:
+          - { name: lint, run: bun run lint }
+          - { name: fmt, run: bun run fmt:check }
+          - { name: typecheck, run: bun run typecheck }
+          - { name: test, run: bun test }
+          - { name: build, run: bun run build }
     steps:
       - uses: actions/checkout@v6
 
@@ -25,17 +34,5 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Lint
-        run: bun run lint
-
-      - name: Format check
-        run: bun run fmt:check
-
-      - name: Typecheck
-        run: bun run typecheck
-
-      - name: Test
-        run: bun test
-
-      - name: Build smoke test
-        run: bun run build
+      - name: ${{ matrix.task.name }}
+        run: ${{ matrix.task.run }}
