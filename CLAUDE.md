@@ -132,7 +132,9 @@ If oxlint complains, fix the code — don't disable rules. The config is intenti
 
 ## Release pipeline
 
-Merge to `main` → release-please opens a release PR (bumps version, updates CHANGELOG) → merging that PR creates a `v*` tag → CI matrix builds 5-platform binaries (darwin arm64/x64, linux arm64/x64, windows x64) and attaches them to the GitHub Release → npm publish runs automatically → Homebrew tap formula is updated to point to the new binary SHA. Version is currently **0.3.0** (npm + brew both published).
+Releases are driven by **[release-please](https://github.com/googleapis/release-please)** (GitHub Action `googleapis/release-please-action`, config in `release-please-config.json` + `.release-please-manifest.json`). Do not hand-bump versions, tag releases, or edit `CHANGELOG.md` manually — release-please owns all of that from Conventional Commit messages.
+
+Merge to `main` → release-please opens a release PR (bumps version, updates CHANGELOG, syncs `plugin.json` / `marketplace.json` versions via `extra-files`) → merging that PR creates a `v*` tag → CI matrix builds 5-platform binaries (darwin arm64/x64, linux arm64/x64, windows x64) and attaches them to the GitHub Release → npm publish runs automatically → Homebrew tap formula is updated to point to the new binary SHA. Version is currently **0.4.0** (npm + brew both published).
 
 ## Phase 2 (planned, not yet built)
 
