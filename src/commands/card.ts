@@ -47,8 +47,12 @@ export const cardCommand = defineCommand({
     try {
       const locale = resolveLocale(args.locale);
 
-      if (args.search) {
-        let results = await searchCards(args.search, locale);
+      // Search/browse mode: triggered by --search (even empty/whitespace) or
+      // by a --class/--cost filter on its own. A blank search term means
+      // "match all", so `--class PRIEST` alone browses every Priest card.
+      if (args.search !== undefined || args.class !== undefined || args.cost !== undefined) {
+        const term = (args.search ?? "").trim();
+        let results = await searchCards(term, locale);
         if (args.class) {
           const cls = args.class.toUpperCase();
           results = results.filter((c) => c.cardClass === cls);

@@ -252,10 +252,10 @@ User intent: "우리 덱 용족 5장, 더 넣을 후보?", "more Pirate cards to
 ```bash
 HERO_CLASS=$(hs deck "$CODE" -f json | jq -r .heroClass)
 TRIBE=DRAGON
-hs card --search " " --class "$HERO_CLASS" -f json | jq --arg t "$TRIBE" '
+hs card --class "$HERO_CLASS" -f json | jq --arg t "$TRIBE" '
   .[] | select(.race == $t or ((.races // []) | index($t))) | {name, cost, attack, health, dbfId}
 '
-hs card --search " " --class NEUTRAL -f json | jq --arg t "$TRIBE" '
+hs card --class NEUTRAL -f json | jq --arg t "$TRIBE" '
   .[] | select(.race == $t or ((.races // []) | index($t))) | {name, cost, attack, health, dbfId}
 '
 ```
@@ -345,16 +345,18 @@ User intent: "회복 몇 장?", "How much healing / armor?", "回血几张?", "�
 
 Heal cards mention `Restore` + `Health` (en) / `생명력` + `회복` (ko) / `恢复` + `生命值` (zhCN). Armor cards mention `Armor` / `방어도` / `护甲`.
 
+Swap the regex per locale + per metric. The two examples below show ko-heal and en-heal; for armor, swap the keyword (`Armor` / `방어도` / `护甲`).
+
 ```bash
-# Korean deck — heal sources
+# Korean deck — heal sources (swap 회복 → 방어도 for armor)
 hs deck "$CODE" -l ko -f json | jq '
   [ .cards[] | select(.card.text and (.card.text | test("회복"))) ]
   | {sources: map({name: .card.name, text: .card.text, n: .count}), total: (map(.count) | add // 0)}
 '
 
-# enUS deck — armor sources
+# enUS deck — heal sources (swap "Restore.*Health" → "Armor" for armor)
 hs deck "$CODE" -f json | jq '
-  [ .cards[] | select(.card.text and (.card.text | test("Armor"; "i"))) ]
+  [ .cards[] | select(.card.text and (.card.text | test("Restore.*Health"; "i"))) ]
   | {sources: map({name: .card.name, text: .card.text, n: .count}), total: (map(.count) | add // 0)}
 '
 ```

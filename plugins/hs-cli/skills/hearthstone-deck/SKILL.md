@@ -157,17 +157,18 @@ hs card EX1_572 -f json | jq .cost            # extract a single field
 
 Substring search with optional filters. Both `--search` and `-s` (short alias) work.
 
-- `--search, -s <string>` — substring match against card name (English and Korean fields).
+- `--search, -s <string>` — substring match against card name (active-locale field). The query is trimmed; a blank or whitespace-only value (`""`, `" "`) acts as a **match-all wildcard**.
 - `--class <CLASS>` — one of `DEATHKNIGHT, DEMONHUNTER, DRUID, HUNTER, MAGE, PALADIN, PRIEST, ROGUE, SHAMAN, WARLOCK, WARRIOR, NEUTRAL, WHIZBANG, DREAM`. Case-insensitive (CLI uppercases internally).
 - `--cost <N>` — mana cost. Accepts a string; CLI parses it as an integer.
 
-An empty `--search ""` is **rejected** by the CLI (treated as missing). Use `--search " "` (single space) as a wildcard substring to "browse all X-cost Y-class cards".
+Browse mode: passing `--class` and/or `--cost` **without** `--search` lists every card matching those filters. An empty/whitespace `--search` does the same. (Bare `hs card` with no positional and no filter still errors.)
 
 ```bash
 hs card --search "Zilliax"                     # enUS (default)
 hs card --search "질리악스" -l ko              # Korean search
 hs card -s "fire" --class MAGE --cost 3
-hs card --search " " --class PRIEST --cost 3   # browse all 3-cost priest cards
+hs card --class PRIEST --cost 3                # browse all 3-cost priest cards
+hs card --search "" --class PRIEST --cost 3    # same (blank search = wildcard)
 ```
 
 ### `hs meta <type>`
@@ -230,7 +231,7 @@ hs meta <type> -f json
 { "type": "sets"|"classes"|"types"|"rarities", "values": [ ... ] }
 ```
 
-Inner card object keys: `artist, attack, cardClass, collectible, cost, dbfId, flavor, health, id, mechanics[], name, race, races[], rarity, referencedTags[], set, spellSchool, text, type`. `mechanics` / `referencedTags` may be null. `race` is a single tribe; `races` is the multi-tribe array (e.g. Murloc + Beast, or `ALL`). `spellSchool` is set only on `type == "SPELL"`. `text` / `name` follow the active locale (default `enUS`; use `-l <code>` to switch).
+Inner card object keys: `artist, attack, cardClass, collectible, cost, dbfId, flavor, health, id, mechanics[], name, race, races[], rarity, referencedTags[], set, spellSchool, text, type`. `mechanics` / `referencedTags` may be null or absent entirely — guard with `// []` in jq. `race` is a single tribe; `races` is the multi-tribe array (e.g. Murloc + Beast, or `ALL`). `spellSchool` is set only on `type == "SPELL"`. `text` / `name` follow the active locale (default `enUS`; use `-l <code>` to switch).
 
 Deck JSON does NOT include total dust or mana curve — only the `table` format renders those. Compute via jq when needed (recipes/deck.md → "Total dust cost", "Mana-curve breakdown"). `hs meta` returns raw English enum codes; Standard/Wild rotation tags and localized labels come from the tables in this SKILL.md or from official Blizzard pages.
 

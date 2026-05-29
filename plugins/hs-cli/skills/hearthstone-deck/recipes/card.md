@@ -25,6 +25,7 @@ hs card <id|name> -f json
 hs card --search <q> [--class CLASS] [--cost N] -f json
 # Array of card objects (same shape). `race` is single ("DRAGON"),
 # `races` is the multi-tribe array. `spellSchool` only on SPELL type.
+# `mechanics` / `referencedTags` may be null OR absent — guard with `// []`.
 # `text` and `name` follow the active locale (default enUS).
 ```
 
@@ -68,11 +69,11 @@ When the user's prompt is in English, no flag needed. When the prompt is Korean 
 
 User intent: aggro/midrange/control candidates per curve slot.
 
-`--search " "` (single space) acts as wildcard since empty `""` is rejected by the CLI.
+Browse mode: pass `--class` / `--cost` with no `--search` to list every matching card. (A blank `--search ""` is also a match-all wildcard if you prefer to pass it explicitly.)
 
 ```bash
 for COST in 1 2 3; do
-  hs card --search " " --class ROGUE --cost "$COST" -f json | jq '.[].name'
+  hs card --class ROGUE --cost "$COST" -f json | jq '.[].name'
 done
 ```
 
@@ -81,7 +82,7 @@ done
 User intent: "3코 마법사 용족", "1-cost Pirate Rogue"
 
 ```bash
-hs card --search " " --class MAGE --cost 3 -f json | jq '
+hs card --class MAGE --cost 3 -f json | jq '
   .[] | select(.race == "DRAGON") | {name, attack, health, text}
 '
 ```
@@ -91,7 +92,7 @@ hs card --search " " --class MAGE --cost 3 -f json | jq '
 User intent: vanilla check — is this minion above/below the 2/cost baseline?
 
 ```bash
-hs card --search " " --class NEUTRAL -f json | jq '
+hs card --class NEUTRAL -f json | jq '
   [ .[] | select(.type == "MINION" and .collectible) ]
   | group_by(.cost)
   | map({
@@ -110,9 +111,9 @@ User intent: "발견 효과 카드 보여줘", "what runs Discover?", "发现卡
 Discover effects are flagged in HearthstoneJSON's `referencedTags` (locale-independent — works without `-l ko`). Filter by class as needed.
 
 ```bash
-hs card --search " " --class PRIEST -f json | jq '
+hs card --class PRIEST -f json | jq '
   .[] | select(.collectible
-              and (.referencedTags // [] | any(. == "DISCOVER")))
+              and ((.referencedTags // []) | any(. == "DISCOVER")))
        | {name, cost, type, text}
 '
 ```

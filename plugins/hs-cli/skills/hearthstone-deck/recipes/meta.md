@@ -31,7 +31,7 @@ Step 1: translate slang/locale to the class code via the class table in SKILL.md
 USER_CLASS="법사"                       # Lock, 法师, Mage, パラ, …
 CLASS_CODE="MAGE"                       # from class table in SKILL.md
 if hs meta classes -f json | jq -e --arg c "$CLASS_CODE" '.values | index($c)' > /dev/null; then
-  hs card --search " " --class "$CLASS_CODE"
+  hs card --class "$CLASS_CODE"
 else
   echo "Invalid class code"; hs meta classes
 fi

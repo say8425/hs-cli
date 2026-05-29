@@ -76,11 +76,13 @@ export const searchCards = async (
   includeAll = false,
 ): Promise<readonly Card[]> => {
   const cards = await loadCards(locale);
-  const lower = query.toLowerCase();
+  // Trim so whitespace-only queries (e.g. `--search " "`) act as a wildcard
+  // rather than matching only card names that happen to contain a space.
+  const lower = query.trim().toLowerCase();
   return cards.filter(
     (c) =>
       (includeAll || c.collectible) &&
-      (c.name.toLowerCase().includes(lower) || c.id.toLowerCase().includes(lower)),
+      (lower === "" || c.name.toLowerCase().includes(lower) || c.id.toLowerCase().includes(lower)),
   );
 };
 
