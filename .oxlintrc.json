@@ -59,5 +59,13 @@
     "promise/no-return-wrap": "error",
     "promise/param-names": "error"
   },
-  "ignorePatterns": ["dist/**", "node_modules/**", "*.config.js", "*.config.ts"]
+  "ignorePatterns": ["dist/**", "node_modules/**", "*.config.js", "*.config.ts"],
+  "overrides": [
+    {
+      "files": ["src/commands/skill.ts"],
+      "rules": {
+        "no-await-in-loop": "off"
+      }
+    }
+  ]
 }
