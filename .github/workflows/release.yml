@@ -160,8 +160,13 @@ jobs:
       - name: Setup Node (for npm publish)
         uses: actions/setup-node@v6
         with:
-          node-version: "22"
+          node-version: "24"
           registry-url: "https://registry.npmjs.org"
+
+      # Trusted Publisher (OIDC) requires npm CLI >= 11.5.1. Node 24 ships an
+      # 11.x npm but not necessarily >= 11.5.1, so pin to the latest explicitly.
+      - name: Upgrade npm for OIDC trusted publishing
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: bun install --frozen-lockfile
