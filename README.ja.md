@@ -123,6 +123,19 @@ hs meta rarities          # FREE, COMMON, RARE, EPIC, LEGENDARY
 hs meta types             # MINION, SPELL, WEAPON, HERO, ...
 ```
 
+### ライブメタ（勝率・ティア・デッキコード）
+
+`hs meta archetypes` と `hs meta decks` は現在の構築フォーマットの勝率、ティア、デッキコードを表示します。
+
+```bash
+hs meta archetypes --game-format standard --rank legend --period past-7
+hs meta decks --rank top-2000-legend -f json
+```
+
+フラグ: `--game-format standard|wild|twist`、`--rank legend|top-2000-legend|competitive|legend-diamond|diamond|platinum|bronze-gold|all`、`--period last-patch|past-3|past-7|past-20|current-season`、`--min-games N`、`--sort wilson|winrate|games`、`--limit N`。行は Wilson 下限値（生の勝率ではない）で並び替えられ、±誤差の列が表示されます。
+
+データ: **Firestone** (firestoneapp.com)、使用許可済み。`hs meta decks` のデッキコードは `hs deck <code>` にパイプできます。
+
 ### JSON出力
 
 任意のコマンドに `-f json` を追加:

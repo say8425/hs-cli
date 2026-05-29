@@ -130,6 +130,19 @@ hs meta rarities          # FREE, COMMON, RARE, EPIC, LEGENDARY
 hs meta types             # MINION, SPELL, WEAPON, HERO, ...
 ```
 
+### Live meta (win rates, tiers, deck codes)
+
+`hs meta archetypes` and `hs meta decks` show current constructed win rates, tiers, and deck codes.
+
+```bash
+hs meta archetypes --game-format standard --rank legend --period past-7
+hs meta decks --rank top-2000-legend -f json
+```
+
+Flags: `--game-format standard|wild|twist`, `--rank legend|top-2000-legend|competitive|legend-diamond|diamond|platinum|bronze-gold|all`, `--period last-patch|past-3|past-7|past-20|current-season`, `--min-games N`, `--sort wilson|winrate|games`, `--limit N`. Rows are ranked by the Wilson lower bound (not raw win rate) and show a ±margin-of-error column.
+
+Data: **Firestone** (firestoneapp.com), used with permission. Deck codes from `hs meta decks` can be piped into `hs deck <code>`.
+
 ### JSON output
 
 Add `-f json` to any command for raw structured data:
