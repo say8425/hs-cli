@@ -31,6 +31,11 @@ export interface RankOptions {
   readonly limit?: number;
 }
 
+const safeWinrate = (winrate: number, wins: number, games: number): number => {
+  if (Number.isFinite(winrate)) return winrate;
+  return games > 0 ? wins / games : 0;
+};
+
 const sortKey = (row: RankedRow, sort: RankOptions["sort"]): number => {
   if (sort === "winrate") return row.winrate;
   if (sort === "games") return row.totalGames;
@@ -53,7 +58,7 @@ export const rankArchetypes = (
     return {
       displayName: displayName(s.name, names),
       playerClass: s.heroCardClass,
-      winrate: s.winrate,
+      winrate: safeWinrate(s.winrate, s.totalWins, s.totalGames),
       wilsonLower: wl,
       moe: marginOfError(s.totalGames),
       tier: tierBand(wl * 100),
@@ -73,7 +78,7 @@ export const rankDecks = (
     return {
       displayName: displayName(s.archetypeName, names),
       playerClass: s.playerClass,
-      winrate: s.winrate,
+      winrate: safeWinrate(s.winrate, s.totalWins, s.totalGames),
       wilsonLower: wl,
       moe: marginOfError(s.totalGames),
       tier: tierBand(wl * 100),

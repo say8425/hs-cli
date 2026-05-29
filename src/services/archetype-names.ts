@@ -8,29 +8,9 @@ const CACHE_DIR = join(homedir(), ".hs-cli");
 const CACHE_FILE = join(CACHE_DIR, "firestone-archetypes-enUS.json");
 const TTL_MS = 24 * 60 * 60 * 1000;
 
-export const CLASS_SLUGS: readonly string[] = [
-  "deathknight",
-  "demonhunter",
-  "druid",
-  "hunter",
-  "mage",
-  "paladin",
-  "priest",
-  "rogue",
-  "shaman",
-  "warlock",
-  "warrior",
-];
-
 export const displayName = (slug: string, map: Record<string, string>): string => {
   const key = slug.startsWith("std-") ? slug.slice(4) : slug;
   return map[key] ?? slug;
-};
-
-// A bare class-name slug (optionally with "xl"/dashes) is Firestone's catch-all bucket.
-export const isOtherBucket = (slug: string): boolean => {
-  const norm = slug.toLowerCase().replaceAll("xl", "").replaceAll("-", "").trim();
-  return CLASS_SLUGS.includes(norm);
 };
 
 const isFresh = async (): Promise<boolean> => {
