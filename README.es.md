@@ -98,6 +98,7 @@ hs card 1124              # por dbfId
 hs card CS2_151           # por ID de carta
 hs card --search "Zilliax"
 hs card --search "fuego" --class MAGE --cost 3
+hs card --class MAGE --cost 3   # listar todas las cartas de Mago de coste 3 (sin --search)
 ```
 
 ### Consultar metadatos

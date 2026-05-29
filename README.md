@@ -105,6 +105,7 @@ hs card 1124              # by dbfId
 hs card CS2_151           # by card ID
 hs card --search "Zilliax"
 hs card --search "fire" --class MAGE --cost 3
+hs card --class MAGE --cost 3   # browse all 3-cost Mage cards (no --search needed)
 ```
 
 ### Query metadata
