@@ -6,8 +6,8 @@ import type {
   OutputFormat,
   RankedRow,
   SkillOutcome,
-} from "../types/index.js";
-import { getFormatKo, getHeroClassKo } from "./deck-decoder.js";
+} from "../types/index.ts";
+import { getFormatKo, getHeroClassKo } from "./deck-decoder.ts";
 
 const buildManaCurve = (cards: readonly DeckCard[]): Record<number, number> => {
   const curve: Record<number, number> = {};
@@ -128,6 +128,11 @@ export const formatSkillOutcomes = (
 
 const pct = (v: number): string => `${(v * 100).toFixed(1)}%`;
 
+// Below this many total games in the bracket/period, even the most-played
+// archetypes rarely clear the 2000-game archetype floor with a tight margin of
+// error, so the whole view is preliminary. ~10× the archetype min-games default.
+const LOW_SAMPLE_DATAPOINTS = 20_000;
+
 export const formatMetaStats = (
   result: MetaResult<unknown>,
   rows: readonly RankedRow[],
@@ -150,7 +155,7 @@ export const formatMetaStats = (
       2,
     );
   }
-  const lowSampleFlag = result.dataPoints < 1000 ? "  [⚠ low sample]" : "";
+  const lowSampleFlag = result.dataPoints < LOW_SAMPLE_DATAPOINTS ? "  [⚠ low sample]" : "";
   const header = `Data: Firestone (firestoneapp.com) · ${result.gameFormat}/${result.rank}/${result.period} · updated ${result.lastUpdated} · ${result.dataPoints} games${lowSampleFlag}`;
   if (rows.length === 0) {
     return `${header}\n(no rows meet the --min-games threshold; lower --min-games or widen --period)`;

@@ -87,9 +87,14 @@ describe("formatMetaStats", () => {
     expect(out).toContain("AAECCODE_A");
     expect(out).toContain("A");
   });
-  it("table output flags low sample when dataPoints < 1000", () => {
-    const lowResult = { ...sampleResult, dataPoints: 500 };
+  it("table output flags low sample for a thin bracket/period", () => {
+    const lowResult = { ...sampleResult, dataPoints: 15000 };
     expect(formatMetaStats(lowResult, sampleRows, "table")).toContain("low sample");
+  });
+
+  it("table output does NOT flag low sample when the dataset is ample", () => {
+    const ampleResult = { ...sampleResult, dataPoints: 600000 };
+    expect(formatMetaStats(ampleResult, sampleRows, "table")).not.toContain("low sample");
   });
 
   it("table output shows a no-rows message when nothing meets the threshold", () => {
