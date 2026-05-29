@@ -30,6 +30,7 @@ hs card <dbfId|cardId|name> [-l koKR]  # card lookup
 hs card --search <q> --class CLASS [-l koKR]  # filtered search
 hs card --class CLASS [--cost N] [-l koKR]    # browse (blank/no --search = wildcard)
 hs meta sets|classes|types|rarities [-l koKR]
+hs skill install [--agent claude,cursor,codex,copilot,opencode] [--project] [--use-npx]  # install the hearthstone-deck skill into agent skills dirs
 ```
 
 Add `-f json` to any command for raw JSON. Default `table` format is agent-friendly (compressed).
@@ -60,16 +61,22 @@ Install channels for end users (CLI):
 
 Claude Code plugin install (all channels): `/plugin marketplace add say8425/hs-cli` + `/plugin install hs-cli@say8425`. Validate with `claude plugin validate .` (marketplace) or `claude plugin validate ./plugins/hs-cli` (plugin).
 
+Install the bundled `hearthstone-deck` skill into any agent (works across all CLI channels — the skill is embedded in the binary, no network needed): `hs skill install` (interactive multiselect) or `hs skill install --agent claude`. Cross-agent via [skills.sh](https://www.skills.sh/): `npx skills add say8425/hs-cli` (discovered through `.claude-plugin/marketplace.json`, no repo restructure needed).
+
 **Do not duplicate SKILL.md at the repo root.** The single source of truth lives inside the plugin. Root-level docs should link to it, not copy it.
 
 ## Architecture
 
 - `src/index.ts` — citty `runMain`, registers subcommands
-- `src/commands/` — one file per command (deck/card/meta), each exports `defineCommand` instance
+- `src/commands/` — one file per command (deck/card/meta/skill), each exports `defineCommand` instance. `skill.ts` nests `install` as a subcommand (`hs skill install`).
 - `src/services/card-db.ts` — HearthstoneJSON CDN fetch + local cache at `~/.hs-cli/`
 - `src/services/deck-decoder.ts` — wraps `deckstrings` npm, joins with card DB
 - `src/services/formatter.ts` — table/json output. **Add new formatters here, not in commands.**
 - `src/services/locale.ts` — locale detection + normalization (`ko` / `ko-KR` / `ko_KR` / `koKR` → `koKR`)
+- `src/services/agent-dirs.ts` — agent→skills-dir map (claude/cursor/codex/copilot/opencode) + path resolver (injectable home/cwd for tests)
+- `src/services/skill-bundle.ts` — `hearthstone-deck` SKILL.md + recipes embedded into the binary via Bun text imports. Single source of truth stays at `plugins/hs-cli/skills/hearthstone-deck/`; a test asserts byte-equality with disk.
+- `src/services/skill-installer.ts` — pure FS writer for the embedded skill (`writeBundle`, `skillExists`)
+- `src/services/skill-select.ts` — pure agent-selection resolver (`--agent` validation + non-TTY guard); clack multiselect lives in the command, not here
 - `src/types/index.ts` — `Card`, `Deck`, `DeckCard` types + Korean class name map
 - `tests/` — bun:test files, one per service. Imports use `.ts` extension (Bun resolves native TS).
 - `tsconfig.json` — typecheck + IDE config. `noEmit: true`, `allowImportingTsExtensions: true`. No separate build config.
