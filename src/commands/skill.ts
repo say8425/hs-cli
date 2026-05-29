@@ -3,7 +3,7 @@ import { defineCommand } from "citty";
 import { isCancel, multiselect, confirm } from "@clack/prompts";
 import { AGENTS, resolveAgentDir, type AgentId } from "../services/agent-dirs.ts";
 import { resolveSelection } from "../services/skill-select.ts";
-import { skillExists, writeBundle } from "../services/skill-installer.ts";
+import { skillExists, writeBundle, targetSkillDir } from "../services/skill-installer.ts";
 import { SKILL_NAME } from "../services/skill-bundle.ts";
 
 interface Outcome {
@@ -29,7 +29,7 @@ const promptAgents = async (): Promise<readonly AgentId[]> => {
   return picked as readonly AgentId[];
 };
 
-const delegateToNpx = (agentIds: readonly AgentId[], global: boolean): never => {
+const delegateToNpx = (global: boolean): never => {
   const args = ["skills", "add", "say8425/hs-cli", "--skill", SKILL_NAME];
   if (global) args.push("-g");
   process.stderr.write(`Delegating to: npx ${args.join(" ")}\n`);
@@ -42,12 +42,19 @@ const installCommand = defineCommand({
   args: {
     agent: { type: "string", description: "Comma-separated agent ids: claude,cursor,codex,copilot,opencode" },
     project: { type: "boolean", default: false, description: "Install into the current project instead of the user home (global)" },
-    "use-npx": { type: "boolean", default: false, description: "Delegate to `npx skills add` when npx is available" },
+    "use-npx": { type: "boolean", default: false, description: "Delegate to `npx skills add` when npx is available (installs for all agents skills detects; ignores --agent)" },
     force: { type: "boolean", default: false, description: "Overwrite an existing skill without prompting" },
     format: { type: "string", alias: "f", default: "table", description: "Output format: table or json" },
   },
   run: async ({ args }) => {
     const scope = args.project ? "project" : "global";
+
+    if (args["use-npx"]) {
+      const hasNpx = spawnSync("npx", ["--version"], { stdio: "ignore" }).status === 0;
+      if (hasNpx) delegateToNpx(scope === "global");
+      process.stderr.write("npx not found; falling back to embedded install.\n");
+    }
+
     const agentFlags = (args.agent ?? "")
       .split(",")
       .map((s: string) => s.trim())
@@ -59,13 +66,8 @@ const installCommand = defineCommand({
     const agentIds: readonly AgentId[] =
       selection.kind === "explicit" ? selection.agents : await promptAgents();
 
-    if (args["use-npx"]) {
-      const hasNpx = spawnSync("npx", ["--version"], { stdio: "ignore" }).status === 0;
-      if (hasNpx) delegateToNpx(agentIds, scope === "global");
-      process.stderr.write("npx not found; falling back to embedded install.\n");
-    }
-
     const outcomes: Outcome[] = [];
+    // Sequential on purpose: the overwrite confirm() prompt must be shown one agent at a time.
     for (const id of agentIds) {
       const def = AGENTS.find((a) => a.id === id);
       if (!def) throw new Error(`unknown agent: ${id}`);
@@ -74,13 +76,14 @@ const installCommand = defineCommand({
         const exists = await skillExists(baseDir);
         if (exists && !args.force && process.stdout.isTTY === true) {
           const ok = await confirm({ message: `${id}: skill exists at ${baseDir}. Overwrite?`, output: process.stderr });
-          if (isCancel(ok) || ok === false) {
+          if (isCancel(ok)) process.exit(0);
+          if (ok === false) {
             outcomes.push({ agent: id, path: baseDir, status: "skipped" });
             continue;
           }
         }
         await writeBundle(baseDir);
-        outcomes.push({ agent: id, path: `${baseDir}/${SKILL_NAME}`, status: exists ? "overwritten" : "installed" });
+        outcomes.push({ agent: id, path: targetSkillDir(baseDir), status: exists ? "overwritten" : "installed" });
       } catch (err) {
         outcomes.push({ agent: id, path: baseDir, status: "failed", error: err instanceof Error ? err.message : String(err) });
       }
