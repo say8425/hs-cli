@@ -99,6 +99,35 @@ describe("skill-select", () => {
   });
 });
 
+import { formatSkillOutcomes } from "../src/services/formatter.ts";
+import type { SkillOutcome } from "../src/types/index.ts";
+
+describe("formatSkillOutcomes", () => {
+  const sample: readonly SkillOutcome[] = [
+    { agent: "claude", path: "/h/.claude/skills/hearthstone-deck", status: "installed" },
+    { agent: "cursor,codex", path: "/p/.agents/skills", status: "failed", error: "boom" },
+  ];
+
+  it("json format round-trips to the outcomes array", () => {
+    const out = formatSkillOutcomes(sample, "json");
+    expect(JSON.parse(out)).toEqual(sample);
+  });
+
+  it("table format renders status, agent, path, and (error) suffix", () => {
+    const out = formatSkillOutcomes(sample, "table");
+    const lines = out.split("\n");
+    expect(lines).toHaveLength(2);
+    expect(lines[0]).toContain("installed");
+    expect(lines[0]).toContain("claude");
+    expect(lines[0]).toContain("/h/.claude/skills/hearthstone-deck");
+    expect(lines[0]).not.toContain("(");
+    expect(lines[1]).toContain("failed");
+    expect(lines[1]).toContain("cursor,codex");
+    expect(lines[1]).toContain("/p/.agents/skills");
+    expect(lines[1]).toContain("(boom)");
+  });
+});
+
 describe("skill-installer", () => {
   it("targets <baseDir>/hearthstone-deck", () => {
     expect(targetSkillDir("/base")).toBe("/base/hearthstone-deck");

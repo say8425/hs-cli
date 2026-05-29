@@ -5,13 +5,8 @@ import { AGENTS, resolveAgentDir, type AgentId } from "../services/agent-dirs.ts
 import { resolveSelection } from "../services/skill-select.ts";
 import { skillExists, writeBundle, targetSkillDir } from "../services/skill-installer.ts";
 import { SKILL_NAME } from "../services/skill-bundle.ts";
-
-interface Outcome {
-  readonly agent: string;
-  readonly path: string;
-  readonly status: "installed" | "overwritten" | "skipped" | "failed";
-  readonly error?: string;
-}
+import { formatSkillOutcomes } from "../services/formatter.ts";
+import type { OutputFormat, SkillOutcome } from "../types/index.ts";
 
 const fail = (message: string): never => {
   process.stderr.write(`${message}\n`);
@@ -93,34 +88,55 @@ const installCommand = defineCommand({
     const agentIds: readonly AgentId[] =
       selection.kind === "explicit" ? selection.agents : await promptAgents();
 
-    const outcomes: Outcome[] = [];
-    // Sequential on purpose: the overwrite confirm() prompt must be shown one agent at a time.
+    const outcomes: SkillOutcome[] = [];
+
+    // Several agents can resolve to the same dir (e.g. project scope: cursor/codex/
+    // copilot/opencode all map to .agents/skills). Dedupe by resolved target dir so we
+    // writeBundle once per physical dir and report a single accurate outcome for it.
+    const byDir = new Map<string, string[]>();
+    const order: string[] = [];
     for (const id of agentIds) {
       const def = AGENTS.find((a) => a.id === id);
-      if (!def) throw new Error(`unknown agent: ${id}`);
+      if (!def) {
+        outcomes.push({ agent: id, path: id, status: "failed", error: "unknown agent" });
+        continue;
+      }
       const baseDir = resolveAgentDir(def, { scope });
+      const existing = byDir.get(baseDir);
+      if (existing) {
+        existing.push(id);
+      } else {
+        byDir.set(baseDir, [id]);
+        order.push(baseDir);
+      }
+    }
+
+    // Sequential on purpose: the overwrite confirm() prompt must be shown one dir at a time.
+    for (const baseDir of order) {
+      const ids = byDir.get(baseDir) ?? [];
+      const agentLabel = ids.join(",");
       try {
         const exists = await skillExists(baseDir);
         if (exists && !args.force && process.stdout.isTTY === true) {
           const ok = await confirm({
-            message: `${id}: skill exists at ${baseDir}. Overwrite?`,
+            message: `${agentLabel}: skill exists at ${baseDir}. Overwrite?`,
             output: process.stderr,
           });
           if (isCancel(ok)) process.exit(0);
           if (ok === false) {
-            outcomes.push({ agent: id, path: baseDir, status: "skipped" });
+            outcomes.push({ agent: agentLabel, path: baseDir, status: "skipped" });
             continue;
           }
         }
         await writeBundle(baseDir);
         outcomes.push({
-          agent: id,
+          agent: agentLabel,
           path: targetSkillDir(baseDir),
           status: exists ? "overwritten" : "installed",
         });
       } catch (err) {
         outcomes.push({
-          agent: id,
+          agent: agentLabel,
           path: baseDir,
           status: "failed",
           error: err instanceof Error ? err.message : String(err),
@@ -128,15 +144,7 @@ const installCommand = defineCommand({
       }
     }
 
-    if (args.format === "json") {
-      process.stdout.write(`${JSON.stringify(outcomes, undefined, 2)}\n`);
-    } else {
-      for (const o of outcomes) {
-        process.stdout.write(
-          `${o.status.padEnd(11)} ${o.agent.padEnd(9)} ${o.path}${o.error ? ` (${o.error})` : ""}\n`,
-        );
-      }
-    }
+    process.stdout.write(`${formatSkillOutcomes(outcomes, args.format as OutputFormat)}\n`);
 
     const anySuccess = outcomes.some((o) => o.status === "installed" || o.status === "overwritten");
     process.exit(anySuccess ? 0 : 1);

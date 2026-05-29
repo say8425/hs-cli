@@ -37,6 +37,13 @@ export type DeckFormat = "standard" | "wild" | "classic" | "twist" | "unknown";
 
 export type OutputFormat = "table" | "json";
 
+export interface SkillOutcome {
+  readonly agent: string;
+  readonly path: string;
+  readonly status: "installed" | "overwritten" | "skipped" | "failed";
+  readonly error?: string;
+}
+
 export const FORMAT_MAP: Record<number, DeckFormat> = {
   1: "wild",
   2: "standard",
