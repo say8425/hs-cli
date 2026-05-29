@@ -105,29 +105,36 @@ export const metaCommand = defineCommand({
     }
 
     if ((STATIC_TYPES as readonly string[]).includes(type)) {
-      const locale = resolveLocale(args.locale);
-      const values = await getMetadata(type as (typeof STATIC_TYPES)[number], locale);
-      process.stdout.write(`${formatMeta(type, values, format)}\n`);
+      try {
+        const locale = resolveLocale(args.locale);
+        const values = await getMetadata(type as (typeof STATIC_TYPES)[number], locale);
+        process.stdout.write(`${formatMeta(type, values, format)}\n`);
+      } catch (err) {
+        fail(`Error: ${err instanceof Error ? err.message : String(err)}`);
+      }
       return;
     }
 
     const kind = type as "archetypes" | "decks";
-    const gameFormat = oneOf<GameFormat>(args["game-format"] as string, GAME_FORMATS, "game-format");
+    const gameFormat = oneOf<GameFormat>(
+      args["game-format"] as string,
+      GAME_FORMATS,
+      "game-format",
+    );
     const rank = oneOf<RankBracket>(args.rank as string, RANKS, "rank");
     const period = oneOf<TimePeriod>(args.period as string, PERIODS, "period");
     const sort = oneOf<RankOptions["sort"]>(args.sort as string, SORTS, "sort");
     const defaultMinGames = kind === "decks" ? 400 : 2000;
-    const minGames =
-      args["min-games"] === undefined ? defaultMinGames : Number(args["min-games"]);
+    const minGames = args["min-games"] === undefined ? defaultMinGames : Number(args["min-games"]);
     const limit = Number(args.limit);
 
     if (Number.isNaN(minGames) || minGames < 0) fail("--min-games must be a non-negative number");
     if (Number.isNaN(limit) || limit < 1) fail("--limit must be a positive number");
 
-    const names = await loadArchetypeNames();
     const opts: RankOptions = { sort, minGames, limit: format === "json" ? undefined : limit };
 
     try {
+      const names = await loadArchetypeNames();
       if (kind === "archetypes") {
         const result = await fetchMeta<ArchetypeStat>("archetypes", gameFormat, rank, period);
         const rows = rankArchetypes(result.rows, names, opts);
