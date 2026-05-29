@@ -85,6 +85,29 @@ describe("skill-bundle", () => {
   });
 });
 
+import { resolveSelection } from "../src/services/skill-select.ts";
+
+describe("skill-select", () => {
+  it("uses explicit --agent ids when valid", () => {
+    const r = resolveSelection({ agents: ["claude", "cursor"], isTTY: false });
+    expect(r).toEqual({ kind: "explicit", agents: ["claude", "cursor"] });
+  });
+
+  it("errors on unknown --agent ids", () => {
+    const r = resolveSelection({ agents: ["claude", "bogus"], isTTY: true });
+    expect(r.kind).toBe("error");
+  });
+
+  it("asks to prompt when interactive and no flags", () => {
+    expect(resolveSelection({ agents: [], isTTY: true })).toEqual({ kind: "prompt" });
+  });
+
+  it("errors when non-interactive and no flags", () => {
+    const r = resolveSelection({ agents: [], isTTY: false });
+    expect(r.kind).toBe("error");
+  });
+});
+
 describe("skill-installer", () => {
   it("targets <baseDir>/hearthstone-deck", () => {
     expect(targetSkillDir("/base")).toBe("/base/hearthstone-deck");
