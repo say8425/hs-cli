@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/say8425/hs-cli/compare/v0.4.1...v0.5.0) (2026-05-29)
+
+
+### Features
+
+* hs skill install — bundle the hearthstone-deck skill with the CLI ([#14](https://github.com/say8425/hs-cli/issues/14)) ([a5b0f31](https://github.com/say8425/hs-cli/commit/a5b0f31db0cbe73cd89504346d0d14a999d5554a))
+
 ## [0.4.1](https://github.com/say8425/hs-cli/compare/v0.4.0...v0.4.1) (2026-05-29)
 
 
