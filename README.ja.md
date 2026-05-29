@@ -67,6 +67,21 @@ hs --version
 hs deck "AAECAQcAA0VjgAEAAA=="
 ```
 
+### Claude Code スキルのインストール
+
+`hs` CLI には `hearthstone-deck` スキルが同梱されています。CLI インストール後:
+
+```bash
+hs skill install              # 対話式: エージェントを選択
+hs skill install --agent claude   # 非対話式
+```
+
+[skills.sh](https://www.skills.sh/) 経由のマルチエージェントインストール (Cursor、Codex、Copilot、OpenCode):
+
+```bash
+npx skills add say8425/hs-cli
+```
+
 ## 使い方
 
 ### デッキをデコード

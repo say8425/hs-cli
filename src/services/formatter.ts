@@ -1,4 +1,4 @@
-import type { Card, Deck, DeckCard, OutputFormat } from "../types/index.js";
+import type { Card, Deck, DeckCard, OutputFormat, SkillOutcome } from "../types/index.js";
 import { getFormatKo, getHeroClassKo } from "./deck-decoder.js";
 
 const buildManaCurve = (cards: readonly DeckCard[]): Record<number, number> => {
@@ -103,4 +103,17 @@ export const formatMeta = (
 ): string => {
   if (format === "json") return JSON.stringify({ type, values }, undefined, 2);
   return `${type} (${values.length}):\n${values.map((v) => `  ${v}`).join("\n")}`;
+};
+
+export const formatSkillOutcomes = (
+  outcomes: readonly SkillOutcome[],
+  format: OutputFormat,
+): string => {
+  if (format === "json") return JSON.stringify(outcomes, undefined, 2);
+  return outcomes
+    .map(
+      (o) =>
+        `${o.status.padEnd(11)} ${o.agent.padEnd(9)} ${o.path}${o.error ? ` (${o.error})` : ""}`,
+    )
+    .join("\n");
 };
