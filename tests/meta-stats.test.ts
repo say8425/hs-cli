@@ -1,7 +1,8 @@
 import { describe, expect, it } from "bun:test";
 import { readFileSync } from "node:fs";
 import { buildMetaUrl, rankArchetypes, rankDecks } from "../src/services/meta-stats.ts";
-import type { ArchetypeStat, DeckStat } from "../src/types/index.ts";
+import type { ArchetypeStat, DeckStat, MetaResult, RankedRow } from "../src/types/index.ts";
+import { formatMetaStats } from "../src/services/formatter.ts";
 
 const NAMES = { "mech-rogue": "Mech Rogue", "pure-paladin": "Pure Paladin" };
 
@@ -49,5 +50,38 @@ describe("rankDecks", () => {
     expect(rows.length).toBe(1);
     expect(rows[0].deckcode).toBe("AAECCODE_A");
     expect(rows[0].displayName).toBe("Mech Rogue");
+  });
+});
+
+const sampleResult: MetaResult<unknown> = {
+  lastUpdated: "2026-05-29T05:59:51.000Z",
+  dataPoints: 568483,
+  gameFormat: "standard",
+  rank: "legend",
+  period: "past-7",
+  rows: [],
+};
+const sampleRows: RankedRow[] = [
+  { displayName: "Mech Rogue", playerClass: "rogue", winrate: 0.55, wilsonLower: 0.541, moe: 0.014, tier: "A", totalGames: 5000, deckcode: "AAECCODE_A" },
+];
+
+describe("formatMetaStats", () => {
+  it("json output round-trips the rows with meta block", () => {
+    const out = formatMetaStats(sampleResult, sampleRows, "json");
+    const parsed = JSON.parse(out);
+    expect(parsed.meta.source).toContain("Firestone");
+    expect(parsed.meta.dataPoints).toBe(568483);
+    expect(parsed.rows[0].displayName).toBe("Mech Rogue");
+  });
+  it("table output contains header attribution and row data", () => {
+    const out = formatMetaStats(sampleResult, sampleRows, "table");
+    expect(out).toContain("Firestone");
+    expect(out).toContain("Mech Rogue");
+    expect(out).toContain("AAECCODE_A");
+    expect(out).toContain("A");
+  });
+  it("table output flags low sample when dataPoints < 1000", () => {
+    const lowResult = { ...sampleResult, dataPoints: 500 };
+    expect(formatMetaStats(lowResult, sampleRows, "table")).toContain("low sample");
   });
 });

@@ -1,4 +1,4 @@
-import type { Card, Deck, DeckCard, OutputFormat, SkillOutcome } from "../types/index.js";
+import type { Card, Deck, DeckCard, MetaResult, OutputFormat, RankedRow, SkillOutcome } from "../types/index.js";
 import { getFormatKo, getHeroClassKo } from "./deck-decoder.js";
 
 const buildManaCurve = (cards: readonly DeckCard[]): Record<number, number> => {
@@ -116,4 +116,37 @@ export const formatSkillOutcomes = (
         `${o.status.padEnd(11)} ${o.agent.padEnd(9)} ${o.path}${o.error ? ` (${o.error})` : ""}`,
     )
     .join("\n");
+};
+
+const pct = (v: number): string => `${(v * 100).toFixed(1)}%`;
+
+export const formatMetaStats = (
+  result: MetaResult<unknown>,
+  rows: readonly RankedRow[],
+  format: OutputFormat,
+): string => {
+  if (format === "json") {
+    return JSON.stringify(
+      {
+        meta: {
+          source: "Firestone (firestoneapp.com)",
+          gameFormat: result.gameFormat,
+          rank: result.rank,
+          period: result.period,
+          lastUpdated: result.lastUpdated,
+          dataPoints: result.dataPoints,
+        },
+        rows,
+      },
+      undefined,
+      2,
+    );
+  }
+  const lowSampleFlag = result.dataPoints < 1000 ? "  [⚠ low sample]" : "";
+  const header = `Data: Firestone (firestoneapp.com) · ${result.gameFormat}/${result.rank}/${result.period} · updated ${result.lastUpdated} · ${result.dataPoints} games${lowSampleFlag}`;
+  const lines = rows.map((r) => {
+    const base = `${r.tier.padEnd(2)} ${r.displayName.padEnd(22)} ${r.playerClass.padEnd(12)} ${pct(r.winrate).padStart(6)} wilson ${pct(r.wilsonLower).padStart(6)} n=${String(r.totalGames).padStart(6)} ±${pct(r.moe)}`;
+    return r.deckcode ? `${base}  ${r.deckcode}` : base;
+  });
+  return [header, ...lines].join("\n");
 };
