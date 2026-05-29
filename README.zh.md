@@ -31,13 +31,13 @@ brew install say8425/tap/hs-cli
 
 支持 darwin arm64/x64 和 linux arm64/x64。
 
-### npm (需要 Node 22+)
+### npm (需要 Node 24+)
 
 ```bash
 npm install -g @say8425/hs-cli
 ```
 
-需要 **Node 22+**。无需 Bun。
+需要 **Node 24+**。无需 Bun。
 
 ### 预构建二进制文件
 

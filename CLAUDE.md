@@ -9,7 +9,7 @@ Hearthstone CLI for AI agents. Decode deck codes, look up cards, query metadata.
 - **oxlint + oxfmt** for lint/format. `tsc` for typecheck only. **No ESLint, no Prettier.**
 - **bun:test** for testing (Jest-compatible API). **No Vitest/Jest/node:test.**
 
-Note: Bun is a **development** requirement, not an end-user install requirement. End users install via Homebrew (no runtime), npm (Node 22+), or a pre-built binary (no runtime).
+Note: Bun is a **development** requirement, not an end-user install requirement. End users install via Homebrew (no runtime), npm (Node 24+), or a pre-built binary (no runtime).
 
 ## Commands
 
@@ -54,7 +54,7 @@ plugins/hs-cli/
 Install channels for end users (CLI):
 
 - **Homebrew** (macOS/Linux, recommended): `brew install say8425/tap/hs-cli` — no runtime required, ~64 MB self-contained binary, 4 platforms (darwin arm64/x64, linux arm64/x64).
-- **npm**: `npm install -g @say8425/hs-cli` — requires Node 22+, Bun not needed (build target=node).
+- **npm**: `npm install -g @say8425/hs-cli` — requires Node 24+, Bun not needed (build target=node).
 - **Pre-built binary**: download from [GitHub Releases](https://github.com/say8425/hs-cli/releases/latest), `chmod +x`, move to PATH — no runtime required, 5 platforms (+ windows x64).
 - **From source (dev)**: `git clone + bun install + bun run build + bun link` — requires Bun 1.3+.
 

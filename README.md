@@ -31,13 +31,13 @@ brew install say8425/tap/hs-cli
 
 Supports darwin arm64/x64 and linux arm64/x64.
 
-### npm (any OS with Node 22+)
+### npm (any OS with Node 24+)
 
 ```bash
 npm install -g @say8425/hs-cli
 ```
 
-Requires **Node 22+**. Bun is not required.
+Requires **Node 24+**. Bun is not required.
 
 ### Pre-built binary
 

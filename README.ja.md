@@ -31,13 +31,13 @@ brew install say8425/tap/hs-cli
 
 darwin arm64/x64 および linux arm64/x64 に対応。
 
-### npm (Node 22+ 環境)
+### npm (Node 24+ 環境)
 
 ```bash
 npm install -g @say8425/hs-cli
 ```
 
-**Node 22+** が必要。Bun は不要。
+**Node 24+** が必要。Bun は不要。
 
 ### ビルド済みバイナリ
 
