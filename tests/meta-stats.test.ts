@@ -91,4 +91,10 @@ describe("formatMetaStats", () => {
     const lowResult = { ...sampleResult, dataPoints: 500 };
     expect(formatMetaStats(lowResult, sampleRows, "table")).toContain("low sample");
   });
+
+  it("table output shows a no-rows message when nothing meets the threshold", () => {
+    const out = formatMetaStats(sampleResult, [], "table");
+    expect(out).toContain("Firestone");
+    expect(out).toContain("--min-games");
+  });
 });

@@ -152,6 +152,9 @@ export const formatMetaStats = (
   }
   const lowSampleFlag = result.dataPoints < 1000 ? "  [⚠ low sample]" : "";
   const header = `Data: Firestone (firestoneapp.com) · ${result.gameFormat}/${result.rank}/${result.period} · updated ${result.lastUpdated} · ${result.dataPoints} games${lowSampleFlag}`;
+  if (rows.length === 0) {
+    return `${header}\n(no rows meet the --min-games threshold; lower --min-games or widen --period)`;
+  }
   const lines = rows.map((r) => {
     const base = `${r.tier.padEnd(2)} ${r.displayName.padEnd(22)} ${r.playerClass.padEnd(12)} ${pct(r.winrate).padStart(6)} wilson ${pct(r.wilsonLower).padStart(6)} n=${String(r.totalGames).padStart(6)} ±${pct(r.moe)}`;
     return r.deckcode ? `${base}  ${r.deckcode}` : base;
