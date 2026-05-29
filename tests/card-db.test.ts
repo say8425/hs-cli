@@ -70,6 +70,20 @@ describe("searchCards", () => {
     const results = await searchCards("zzzzzzzzzzz_nope");
     expect(results.length).toBe(0);
   });
+
+  it("treats a whitespace-only query as a match-all wildcard", async () => {
+    const all = await searchCards(" ");
+    const blank = await searchCards("");
+    const tabs = await searchCards("   ");
+    expect(all.length).toBeGreaterThan(1000);
+    // Trimmed empty and single-space behave identically
+    expect(all.length).toBe(blank.length);
+    expect(all.length).toBe(tabs.length);
+    // Wildcard still respects the collectible filter by default
+    for (const card of all) {
+      expect(card.collectible).toBe(true);
+    }
+  });
 });
 
 describe("getMetadata", () => {

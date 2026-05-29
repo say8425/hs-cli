@@ -98,6 +98,7 @@ hs card 1124              # dbfId로
 hs card CS2_151           # 카드 ID로
 hs card --search "질리악스"
 hs card --search "화염" --class MAGE --cost 3
+hs card --class MAGE --cost 3   # 3코스트 마법사 카드 전체 조회 (--search 불필요)
 ```
 
 ### 메타데이터

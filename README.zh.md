@@ -98,6 +98,7 @@ hs card 1124              # 通过 dbfId
 hs card CS2_151           # 通过卡牌 ID
 hs card --search "吉里亚克斯"
 hs card --search "fire" --class MAGE --cost 3
+hs card --class MAGE --cost 3   # 浏览全部 3 费法师卡牌(无需 --search)
 ```
 
 ### 元数据

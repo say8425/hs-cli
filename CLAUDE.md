@@ -28,6 +28,7 @@ bun run check                       # lint + fmt:check + typecheck + test
 hs deck <code> [-l koKR]            # decode deck (table format default)
 hs card <dbfId|cardId|name> [-l koKR]  # card lookup
 hs card --search <q> --class CLASS [-l koKR]  # filtered search
+hs card --class CLASS [--cost N] [-l koKR]    # browse (blank/no --search = wildcard)
 hs meta sets|classes|types|rarities [-l koKR]
 ```
 
@@ -42,7 +43,12 @@ This repo is both a **Bun CLI project** and a **Claude Code marketplace** that d
 plugins/hs-cli/
 ├── .claude-plugin/plugin.json          # plugin manifest
 ├── README.md                           # plugin-specific install + usage
-└── skills/hearthstone-deck/SKILL.md    # the skill itself, namespace hs-cli:hearthstone-deck
+└── skills/hearthstone-deck/
+    ├── SKILL.md                        # entry, namespace hs-cli:hearthstone-deck
+    └── recipes/                        # jq-heavy reference, loaded on demand
+        ├── deck.md                     # deck-analysis workflows (curve/dust/tribe/archetype/...)
+        ├── card.md                     # card-lookup workflows (compare/translate/enumerate)
+        └── meta.md                     # meta workflows (class normalization, dust cheat-sheet, type filter)
 ```
 
 Install channels for end users (CLI):

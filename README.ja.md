@@ -98,6 +98,7 @@ hs card 1124              # dbfId で
 hs card CS2_151           # カードID で
 hs card --search "ジリアックス"
 hs card --search "fire" --class MAGE --cost 3
+hs card --class MAGE --cost 3   # 3コストのメイジカードを一覧 (--search 不要)
 ```
 
 ### メタデータ
