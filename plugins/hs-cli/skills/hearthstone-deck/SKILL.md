@@ -1,6 +1,6 @@
 ---
 name: hearthstone-deck
-description: Use when the user wants anything involving Hearthstone — decode/analyze/compare decks, look up cards by name or id, search cards with filters, or query game metadata (sets, classes, card types, rarities). Triggers on deck-code strings (base64 starting with "AAEC", "AAEB", "AAEA"), Hearthstone in any language or community nickname (HS, Blizzard Hearthstone; 하스스톤, 하스, 돌겜, 하섭; ハースストーン, ハース, ハスス; 炉石传说, 炉石, 炉石酒馆战棋; 爐石戰記, 爐石, 爐戰; Hearth, Pedra do Lar; Хартстоун, Хартса), mode keywords in any language (Standard / Wild / Twist / Arena / Battlegrounds / BG; 정규 / 야생 / 전장 / 투기장 / 선술집난투 / 용병단; 标准 / 狂野 / 酒馆战棋 / 竞技场), mana-curve/dust/win-condition/meta/nerf discussion, single-card lookups, name searches in any language, and class/format/expansion queries.
+description: Use when the user wants anything involving Hearthstone — decode/analyze/compare decks, look up cards by name or id, search cards with filters, or query game metadata (sets, classes, card types, rarities). Triggers on deck-code strings (base64 starting with "AAEC", "AAEB", "AAEA"), Hearthstone in any language or community nickname (HS, Blizzard Hearthstone; 하스스톤, 하스, 돌겜, 하섭; ハースストーン, ハース, ハスス; 炉石传说, 炉石, 炉石酒馆战棋; 爐石戰記, 爐石, 爐戰; Hearth, Pedra do Lar; Хартстоун, Хартса), mode keywords in any language (Standard / Wild / Twist / Arena / Battlegrounds / BG; 정규 / 야생 / 전장 / 투기장 / 선술집난투 / 용병단; 标准 / 狂野 / 酒馆战棋 / 竞技场), mana-curve/dust/win-condition/meta/nerf discussion, single-card lookups, name searches in any language, class/format/expansion queries, and current-meta tier-list / win-rate / best-deck questions (tier list, winrate, what's strong/best, 메타/티어/승률/무슨 덱이 좋아, ティア/勝率, 强势/胜率/上分).
 ---
 
 # Hearthstone CLI (decks, cards, metadata)
@@ -13,6 +13,8 @@ This skill covers the full surface of the `hs` CLI:
 - `hs card <dbfId|cardId|name>` — single-card lookup
 - `hs card --search <q> [--class CLASS] [--cost N]` — name + filter search
 - `hs meta sets|classes|types|rarities` — game metadata
+- `hs meta archetypes` — live archetype win rates + tiers (current meta, Firestone data)
+- `hs meta decks` — live top decks with deck codes (current meta, Firestone data)
 
 ## Language and naming triggers
 
