@@ -2,18 +2,9 @@ import { mkdtemp, readFile, rm, stat } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "bun:test";
-import {
-  AGENTS,
-  isAgentId,
-  resolveAgentDir,
-  type AgentDef,
-} from "../src/services/agent-dirs.ts";
+import { AGENTS, isAgentId, resolveAgentDir, type AgentDef } from "../src/services/agent-dirs.ts";
 import { SKILL_BUNDLE, SKILL_NAME } from "../src/services/skill-bundle.ts";
-import {
-  skillExists,
-  targetSkillDir,
-  writeBundle,
-} from "../src/services/skill-installer.ts";
+import { skillExists, targetSkillDir, writeBundle } from "../src/services/skill-installer.ts";
 
 const byId = (id: string): AgentDef => {
   const a = AGENTS.find((x) => x.id === id);

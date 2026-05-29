@@ -14,12 +14,21 @@ export const AGENTS: readonly AgentDef[] = [
   { id: "claude", label: "Claude Code", globalDir: ".claude/skills", projectDir: ".claude/skills" },
   { id: "cursor", label: "Cursor", globalDir: ".cursor/skills", projectDir: ".agents/skills" },
   { id: "codex", label: "Codex", globalDir: ".codex/skills", projectDir: ".agents/skills" },
-  { id: "copilot", label: "GitHub Copilot", globalDir: ".copilot/skills", projectDir: ".agents/skills" },
-  { id: "opencode", label: "OpenCode", globalDir: ".config/opencode/skills", projectDir: ".agents/skills" },
+  {
+    id: "copilot",
+    label: "GitHub Copilot",
+    globalDir: ".copilot/skills",
+    projectDir: ".agents/skills",
+  },
+  {
+    id: "opencode",
+    label: "OpenCode",
+    globalDir: ".config/opencode/skills",
+    projectDir: ".agents/skills",
+  },
 ];
 
-export const isAgentId = (value: string): value is AgentId =>
-  AGENTS.some((a) => a.id === value);
+export const isAgentId = (value: string): value is AgentId => AGENTS.some((a) => a.id === value);
 
 export interface ResolveOptions {
   readonly scope: "global" | "project";

@@ -38,13 +38,37 @@ const delegateToNpx = (global: boolean): never => {
 };
 
 const installCommand = defineCommand({
-  meta: { name: "install", description: "Install the hearthstone-deck skill into agent skills dirs" },
+  meta: {
+    name: "install",
+    description: "Install the hearthstone-deck skill into agent skills dirs",
+  },
   args: {
-    agent: { type: "string", description: "Comma-separated agent ids: claude,cursor,codex,copilot,opencode" },
-    project: { type: "boolean", default: false, description: "Install into the current project instead of the user home (global)" },
-    "use-npx": { type: "boolean", default: false, description: "Delegate to `npx skills add` when npx is available (installs for all agents skills detects; ignores --agent)" },
-    force: { type: "boolean", default: false, description: "Overwrite an existing skill without prompting" },
-    format: { type: "string", alias: "f", default: "table", description: "Output format: table or json" },
+    agent: {
+      type: "string",
+      description: "Comma-separated agent ids: claude,cursor,codex,copilot,opencode",
+    },
+    project: {
+      type: "boolean",
+      default: false,
+      description: "Install into the current project instead of the user home (global)",
+    },
+    "use-npx": {
+      type: "boolean",
+      default: false,
+      description:
+        "Delegate to `npx skills add` when npx is available (installs for all agents skills detects; ignores --agent)",
+    },
+    force: {
+      type: "boolean",
+      default: false,
+      description: "Overwrite an existing skill without prompting",
+    },
+    format: {
+      type: "string",
+      alias: "f",
+      default: "table",
+      description: "Output format: table or json",
+    },
   },
   run: async ({ args }) => {
     const scope = args.project ? "project" : "global";
@@ -60,7 +84,10 @@ const installCommand = defineCommand({
       .map((s: string) => s.trim())
       .filter((s: string) => s.length > 0);
 
-    const selection = resolveSelection({ agents: agentFlags, isTTY: process.stdout.isTTY === true });
+    const selection = resolveSelection({
+      agents: agentFlags,
+      isTTY: process.stdout.isTTY === true,
+    });
     if (selection.kind === "error") fail(selection.message);
 
     const agentIds: readonly AgentId[] =
@@ -75,7 +102,10 @@ const installCommand = defineCommand({
       try {
         const exists = await skillExists(baseDir);
         if (exists && !args.force && process.stdout.isTTY === true) {
-          const ok = await confirm({ message: `${id}: skill exists at ${baseDir}. Overwrite?`, output: process.stderr });
+          const ok = await confirm({
+            message: `${id}: skill exists at ${baseDir}. Overwrite?`,
+            output: process.stderr,
+          });
           if (isCancel(ok)) process.exit(0);
           if (ok === false) {
             outcomes.push({ agent: id, path: baseDir, status: "skipped" });
@@ -83,9 +113,18 @@ const installCommand = defineCommand({
           }
         }
         await writeBundle(baseDir);
-        outcomes.push({ agent: id, path: targetSkillDir(baseDir), status: exists ? "overwritten" : "installed" });
+        outcomes.push({
+          agent: id,
+          path: targetSkillDir(baseDir),
+          status: exists ? "overwritten" : "installed",
+        });
       } catch (err) {
-        outcomes.push({ agent: id, path: baseDir, status: "failed", error: err instanceof Error ? err.message : String(err) });
+        outcomes.push({
+          agent: id,
+          path: baseDir,
+          status: "failed",
+          error: err instanceof Error ? err.message : String(err),
+        });
       }
     }
 
@@ -93,7 +132,9 @@ const installCommand = defineCommand({
       process.stdout.write(`${JSON.stringify(outcomes, undefined, 2)}\n`);
     } else {
       for (const o of outcomes) {
-        process.stdout.write(`${o.status.padEnd(11)} ${o.agent.padEnd(9)} ${o.path}${o.error ? ` (${o.error})` : ""}\n`);
+        process.stdout.write(
+          `${o.status.padEnd(11)} ${o.agent.padEnd(9)} ${o.path}${o.error ? ` (${o.error})` : ""}\n`,
+        );
       }
     }
 
