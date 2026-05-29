@@ -10,7 +10,7 @@
       "name": "hs-cli",
       "source": "./plugins/hs-cli",
       "description": "Hearthstone deck decoder, card search, and metadata queries via the `hs` CLI",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "author": {
         "name": "say8425"
       },

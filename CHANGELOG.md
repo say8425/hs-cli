@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.4.1](https://github.com/say8425/hs-cli/compare/v0.4.0...v0.4.1) (2026-05-29)
+
+
+### Documentation
+
+* **skill:** split Recipes into reference files and add community-driven recipes ([#8](https://github.com/say8425/hs-cli/issues/8)) ([727804c](https://github.com/say8425/hs-cli/commit/727804c802af5d4a93cc3aa50f7d652e4deb26bb))
+* state that releases are driven by release-please ([#11](https://github.com/say8425/hs-cli/issues/11)) ([0d2cd2b](https://github.com/say8425/hs-cli/commit/0d2cd2b645b26b96347d22e59534546b1de4c7c8))
+
 ## [0.4.0](https://github.com/say8425/hs-cli/compare/v0.3.3...v0.4.0) (2026-05-28)
 
 
