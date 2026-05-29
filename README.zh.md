@@ -67,6 +67,21 @@ hs --version
 hs deck "AAECAQcAA0VjgAEAAA=="
 ```
 
+### 安装 Claude Code 技能
+
+`hs` CLI 内置 `hearthstone-deck` 技能。安装 CLI 后：
+
+```bash
+hs skill install              # 交互式：选择代理
+hs skill install --agent claude   # 非交互式
+```
+
+通过 [skills.sh](https://www.skills.sh/) 跨代理安装（Cursor、Codex、Copilot、OpenCode）：
+
+```bash
+npx skills add say8425/hs-cli
+```
+
 ## 使用方法
 
 ### 解码套牌

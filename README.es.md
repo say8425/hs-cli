@@ -67,6 +67,21 @@ hs --version
 hs deck "AAECAQcAA0VjgAEAAA=="
 ```
 
+### Instalar la skill de Claude Code
+
+El CLI `hs` incluye la skill `hearthstone-deck`. Tras instalar el CLI:
+
+```bash
+hs skill install              # interactivo: elige agentes
+hs skill install --agent claude   # no interactivo
+```
+
+Instalación multi-agente vía [skills.sh](https://www.skills.sh/) (Cursor, Codex, Copilot, OpenCode):
+
+```bash
+npx skills add say8425/hs-cli
+```
+
 ## Uso
 
 ### Decodificar un mazo

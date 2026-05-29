@@ -250,6 +250,15 @@ jobs:
             test do
               assert_match version.to_s, shell_output("#{bin}/hs --version")
             end
+
+            def caveats
+              <<~EOS
+                To install the Claude Code skill that drives this CLI:
+                  hs skill install
+                Cross-agent (Cursor/Codex/Copilot/OpenCode), via skills.sh:
+                  npx skills add say8425/hs-cli
+              EOS
+            end
           end
           RB
 
