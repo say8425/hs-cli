@@ -6,12 +6,10 @@ import { formatMetaStats } from "../src/services/formatter.ts";
 
 const NAMES = { "mech-rogue": "Mech Rogue", "pure-paladin": "Pure Paladin" };
 
-const archFixture = JSON.parse(
-  readFileSync("tests/fixtures/firestone-archetypes.json", "utf8"),
-).archetypeStats as ArchetypeStat[];
-const deckFixture = JSON.parse(
-  readFileSync("tests/fixtures/firestone-decks.json", "utf8"),
-).deckStats as DeckStat[];
+const archFixture = JSON.parse(readFileSync("tests/fixtures/firestone-archetypes.json", "utf8"))
+  .archetypeStats as ArchetypeStat[];
+const deckFixture = JSON.parse(readFileSync("tests/fixtures/firestone-decks.json", "utf8"))
+  .deckStats as DeckStat[];
 
 describe("meta-stats buildMetaUrl", () => {
   it("builds the archetypes endpoint URL", () => {
@@ -62,7 +60,16 @@ const sampleResult: MetaResult<unknown> = {
   rows: [],
 };
 const sampleRows: RankedRow[] = [
-  { displayName: "Mech Rogue", playerClass: "rogue", winrate: 0.55, wilsonLower: 0.541, moe: 0.014, tier: "A", totalGames: 5000, deckcode: "AAECCODE_A" },
+  {
+    displayName: "Mech Rogue",
+    playerClass: "rogue",
+    winrate: 0.55,
+    wilsonLower: 0.541,
+    moe: 0.014,
+    tier: "A",
+    totalGames: 5000,
+    deckcode: "AAECCODE_A",
+  },
 ];
 
 describe("formatMetaStats", () => {
