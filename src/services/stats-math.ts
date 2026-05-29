@@ -12,8 +12,7 @@ export const wilsonLower = (wins: number, games: number, z = 1.96): number => {
 
 // Margin of error of a proportion at p=0.5 (worst case), 95% confidence.
 // Returned as a proportion in 0..1 (e.g. 0.098 = ±9.8%).
-export const marginOfError = (games: number): number =>
-  games <= 0 ? 1 : 0.98 / Math.sqrt(games);
+export const marginOfError = (games: number): number => (games <= 0 ? 1 : 0.98 / Math.sqrt(games));
 
 // Heuristic static tier bands on a winrate PERCENT (apply to the Wilson lower
 // bound so small samples cannot inflate a tier).

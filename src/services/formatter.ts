@@ -1,4 +1,12 @@
-import type { Card, Deck, DeckCard, MetaResult, OutputFormat, RankedRow, SkillOutcome } from "../types/index.js";
+import type {
+  Card,
+  Deck,
+  DeckCard,
+  MetaResult,
+  OutputFormat,
+  RankedRow,
+  SkillOutcome,
+} from "../types/index.js";
 import { getFormatKo, getHeroClassKo } from "./deck-decoder.js";
 
 const buildManaCurve = (cards: readonly DeckCard[]): Record<number, number> => {
