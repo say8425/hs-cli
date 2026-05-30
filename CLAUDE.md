@@ -67,6 +67,8 @@ Install the bundled `hearthstone-deck` skill into any agent (works across all CL
 
 **Do not duplicate SKILL.md at the repo root.** The single source of truth lives inside the plugin. Root-level docs should link to it, not copy it.
 
+**Keep the skill in sync with the CLI.** When a change adds/removes/renames a command, subcommand, or flag (or changes documented behavior), update the `hearthstone-deck` skill in the SAME change: `plugins/hs-cli/skills/hearthstone-deck/SKILL.md` (command surface + trigger description) and the relevant `recipes/*.md` (deck/card/meta). This is part of the definition-of-done for any CLI-surface change. Internal-only refactors that don't change the documented surface don't require a skill edit.
+
 ## Architecture
 
 - `src/index.ts` — citty `runMain`, registers subcommands
