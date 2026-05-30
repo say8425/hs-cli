@@ -97,6 +97,17 @@ describe("formatMetaStats", () => {
     expect(formatMetaStats(ampleResult, sampleRows, "table")).not.toContain("low sample");
   });
 
+  it("low-sample boundary: exactly 20000 dataPoints is not flagged", () => {
+    const boundaryResult = { ...sampleResult, dataPoints: 20000 };
+    expect(formatMetaStats(boundaryResult, sampleRows, "table")).not.toContain("low sample");
+  });
+
+  it("json output is unaffected by empty rows (returns rows: [])", () => {
+    const parsed = JSON.parse(formatMetaStats(sampleResult, [], "json"));
+    expect(parsed.rows).toEqual([]);
+    expect(parsed.meta.source).toContain("Firestone");
+  });
+
   it("table output shows a no-rows message when nothing meets the threshold", () => {
     const out = formatMetaStats(sampleResult, [], "table");
     expect(out).toContain("Firestone");
