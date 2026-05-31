@@ -1,0 +1,8 @@
+{
+  "archetype": {
+    "mech-rogue": "Mech Rogue",
+    "xl-rainbow-mage": "XL Rainbow Mage",
+    "pure-paladin": "Pure Paladin",
+    "no-archetype": "No Archetype"
+  }
+}

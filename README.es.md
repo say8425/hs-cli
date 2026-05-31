@@ -123,6 +123,19 @@ hs meta rarities          # FREE, COMMON, RARE, EPIC, LEGENDARY
 hs meta types             # MINION, SPELL, WEAPON, HERO, ...
 ```
 
+### Meta en vivo (tasas de victoria, tiers, códigos de mazo)
+
+`hs meta archetypes` y `hs meta decks` muestran las tasas de victoria actuales del modo construido, tiers y códigos de mazo.
+
+```bash
+hs meta archetypes --game-format standard --rank legend --period past-7
+hs meta decks --rank top-2000-legend -f json
+```
+
+Flags: `--game-format standard|wild|twist`, `--rank legend|top-2000-legend|competitive|legend-diamond|diamond|platinum|bronze-gold|all`, `--period last-patch|past-3|past-7|past-20|current-season`, `--min-games N`, `--sort wilson|winrate|games`, `--limit N`. Las filas están ordenadas por el límite inferior de Wilson (no por la tasa de victoria bruta) y muestran una columna de ±margen de error.
+
+Datos: **Firestone** (firestoneapp.com), usado con permiso. Los códigos de mazo de `hs meta decks` se pueden pasar mediante pipe a `hs deck <code>`.
+
 ### Salida JSON
 
 Agrega `-f json` a cualquier comando:

@@ -123,6 +123,19 @@ hs meta rarities          # FREE, COMMON, RARE, EPIC, LEGENDARY
 hs meta types             # MINION, SPELL, WEAPON, HERO, ...
 ```
 
+### 라이브 메타 (승률, 티어, 덱 코드)
+
+`hs meta archetypes`와 `hs meta decks`는 현재 일반 모드 승률, 티어, 덱 코드를 보여줍니다.
+
+```bash
+hs meta archetypes --game-format standard --rank legend --period past-7
+hs meta decks --rank top-2000-legend -f json
+```
+
+플래그: `--game-format standard|wild|twist`, `--rank legend|top-2000-legend|competitive|legend-diamond|diamond|platinum|bronze-gold|all`, `--period last-patch|past-3|past-7|past-20|current-season`, `--min-games N`, `--sort wilson|winrate|games`, `--limit N`. 행은 Wilson 하한값(원시 승률 기준 아님)으로 정렬되며 ±오차 범위 열이 포함됩니다.
+
+데이터: **Firestone** (firestoneapp.com), 허가 후 사용. `hs meta decks`의 덱 코드는 `hs deck <code>`에 파이프로 전달할 수 있습니다.
+
 ### JSON 출력
 
 모든 명령어에 `-f json` 추가:

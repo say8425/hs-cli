@@ -1,0 +1,27 @@
+{
+  "lastUpdated": "2026-05-29T05:59:51.000Z",
+  "rankBracket": "legend",
+  "timePeriod": "past-7",
+  "format": "standard",
+  "dataPoints": 200000,
+  "deckStats": [
+    {
+      "decklist": "AAECCODE_A",
+      "archetypeId": 1,
+      "archetypeName": "mech-rogue",
+      "playerClass": "rogue",
+      "totalGames": 900,
+      "totalWins": 500,
+      "winrate": 0.5556
+    },
+    {
+      "decklist": "AAECCODE_B",
+      "archetypeId": 2,
+      "archetypeName": "pure-paladin",
+      "playerClass": "paladin",
+      "totalGames": 120,
+      "totalWins": 80,
+      "winrate": 0.6667
+    }
+  ]
+}

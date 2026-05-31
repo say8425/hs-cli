@@ -123,6 +123,19 @@ hs meta rarities          # FREE, COMMON, RARE, EPIC, LEGENDARY
 hs meta types             # MINION, SPELL, WEAPON, HERO, ...
 ```
 
+### 实时环境（胜率、梯队、套牌代码）
+
+`hs meta archetypes` 和 `hs meta decks` 显示当前构筑赛制的胜率、梯队和套牌代码。
+
+```bash
+hs meta archetypes --game-format standard --rank legend --period past-7
+hs meta decks --rank top-2000-legend -f json
+```
+
+标志: `--game-format standard|wild|twist`、`--rank legend|top-2000-legend|competitive|legend-diamond|diamond|platinum|bronze-gold|all`、`--period last-patch|past-3|past-7|past-20|current-season`、`--min-games N`、`--sort wilson|winrate|games`、`--limit N`。行按 Wilson 下界排序（而非原始胜率），并显示 ±误差列。
+
+数据来源: **Firestone** (firestoneapp.com)，已获授权使用。`hs meta decks` 输出的套牌代码可通过管道传入 `hs deck <code>`。
+
 ### JSON 输出
 
 任何命令添加 `-f json`:

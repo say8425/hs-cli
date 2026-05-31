@@ -30,6 +30,8 @@ hs card <dbfId|cardId|name> [-l koKR]  # card lookup
 hs card --search <q> --class CLASS [-l koKR]  # filtered search
 hs card --class CLASS [--cost N] [-l koKR]    # browse (blank/no --search = wildcard)
 hs meta sets|classes|types|rarities [-l koKR]
+hs meta archetypes [--game-format standard|wild|twist] [--rank legend|...] [--period last-patch|...]  # live archetype winrate/tier (Firestone)
+hs meta decks [--rank ...] [--period ...] [--sort wilson|winrate|games]   # live decks + deck codes (Firestone)
 hs skill install [--agent claude,cursor,codex,copilot,opencode] [--project] [--use-npx]  # install the hearthstone-deck skill into agent skills dirs
 ```
 
@@ -65,6 +67,8 @@ Install the bundled `hearthstone-deck` skill into any agent (works across all CL
 
 **Do not duplicate SKILL.md at the repo root.** The single source of truth lives inside the plugin. Root-level docs should link to it, not copy it.
 
+**Keep the skill in sync with the CLI.** When a change adds/removes/renames a command, subcommand, or flag (or changes documented behavior), update the `hearthstone-deck` skill in the SAME change: `plugins/hs-cli/skills/hearthstone-deck/SKILL.md` (command surface + trigger description) and the relevant `recipes/*.md` (deck/card/meta). This is part of the definition-of-done for any CLI-surface change. Internal-only refactors that don't change the documented surface don't require a skill edit.
+
 ## Architecture
 
 - `src/index.ts` — citty `runMain`, registers subcommands
@@ -77,6 +81,7 @@ Install the bundled `hearthstone-deck` skill into any agent (works across all CL
 - `src/services/skill-bundle.ts` — `hearthstone-deck` SKILL.md + recipes embedded into the binary via Bun text imports. Single source of truth stays at `plugins/hs-cli/skills/hearthstone-deck/`; a test asserts byte-equality with disk.
 - `src/services/skill-installer.ts` — pure FS writer for the embedded skill (`writeBundle`, `skillExists`)
 - `src/services/skill-select.ts` — pure agent-selection resolver (`--agent` validation + non-TTY guard); clack multiselect lives in the command, not here
+- `src/services/meta-stats.ts` — Firestone constructed win-rate/deck stats (CDN JSON, 1h cache). Helpers: `stats-math.ts` (Wilson lower bound / margin of error / tier band), `archetype-names.ts` (slug→display name, cached). Data: Firestone (firestoneapp.com), used with permission. Ranked by Wilson lower bound, not raw win rate.
 - `src/types/index.ts` — `Card`, `Deck`, `DeckCard` types + Korean class name map
 - `tests/` — bun:test files, one per service. Imports use `.ts` extension (Bun resolves native TS).
 - `tsconfig.json` — typecheck + IDE config. `noEmit: true`, `allowImportingTsExtensions: true`. No separate build config.

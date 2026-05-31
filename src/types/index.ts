@@ -73,3 +73,59 @@ export const CLASS_NAMES_KO: Record<string, string> = {
   DEATHKNIGHT: "죽음의 기사",
   NEUTRAL: "중립",
 };
+
+export type GameFormat = "standard" | "wild" | "twist";
+
+export type RankBracket =
+  | "legend"
+  | "top-2000-legend"
+  | "competitive"
+  | "legend-diamond"
+  | "diamond"
+  | "platinum"
+  | "bronze-gold"
+  | "all";
+
+export type TimePeriod = "last-patch" | "past-3" | "past-7" | "past-20" | "current-season";
+
+export type MetaKind = "archetypes" | "decks";
+
+export interface ArchetypeStat {
+  readonly id: number;
+  readonly name: string;
+  readonly heroCardClass: string;
+  readonly totalGames: number;
+  readonly totalWins: number;
+  readonly coreCards: readonly string[];
+  readonly winrate: number;
+}
+
+export interface DeckStat {
+  readonly decklist: string;
+  readonly archetypeId: number;
+  readonly archetypeName: string;
+  readonly playerClass: string;
+  readonly totalGames: number;
+  readonly totalWins: number;
+  readonly winrate: number;
+}
+
+export interface RankedRow {
+  readonly displayName: string;
+  readonly playerClass: string;
+  readonly winrate: number;
+  readonly wilsonLower: number;
+  readonly moe: number;
+  readonly tier: string;
+  readonly totalGames: number;
+  readonly deckcode?: string;
+}
+
+export interface MetaResult<T> {
+  readonly lastUpdated: string;
+  readonly dataPoints: number;
+  readonly gameFormat: GameFormat;
+  readonly rank: RankBracket;
+  readonly period: TimePeriod;
+  readonly rows: readonly T[];
+}

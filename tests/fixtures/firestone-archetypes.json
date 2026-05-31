@@ -1,0 +1,45 @@
+{
+  "lastUpdated": "2026-05-29T05:59:51.000Z",
+  "rankBracket": "legend",
+  "timePeriod": "past-7",
+  "format": "standard",
+  "dataPoints": 568483,
+  "archetypeStats": [
+    {
+      "id": 1,
+      "name": "mech-rogue",
+      "heroCardClass": "rogue",
+      "totalGames": 5000,
+      "totalWins": 2750,
+      "coreCards": [],
+      "winrate": 0.55
+    },
+    {
+      "id": 2,
+      "name": "pure-paladin",
+      "heroCardClass": "paladin",
+      "totalGames": 3000,
+      "totalWins": 1560,
+      "coreCards": [],
+      "winrate": 0.52
+    },
+    {
+      "id": 3,
+      "name": "spike-deck",
+      "heroCardClass": "mage",
+      "totalGames": 50,
+      "totalWins": 40,
+      "coreCards": [],
+      "winrate": 0.8
+    },
+    {
+      "id": 4,
+      "name": "druid",
+      "heroCardClass": "druid",
+      "totalGames": 2500,
+      "totalWins": 1200,
+      "coreCards": [],
+      "winrate": 0.48
+    }
+  ]
+}

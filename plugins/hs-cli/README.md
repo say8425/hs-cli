@@ -76,11 +76,25 @@ Once installed, just talk to Claude:
 
 Or invoke explicitly: `/hs-cli:hearthstone-deck`.
 
+## Live meta (win rates, tiers, deck codes)
+
+`hs meta archetypes` and `hs meta decks` show current constructed win rates, tiers, and deck codes.
+
+```bash
+hs meta archetypes --game-format standard --rank legend --period past-7
+hs meta decks --rank top-2000-legend -f json
+```
+
+Flags: `--game-format standard|wild|twist`, `--rank legend|top-2000-legend|competitive|legend-diamond|diamond|platinum|bronze-gold|all`, `--period last-patch|past-3|past-7|past-20|current-season`, `--min-games N`, `--sort wilson|winrate|games`, `--limit N`. Rows are ranked by the Wilson lower bound (not raw win rate) and show a ±margin-of-error column.
+
+Data: **Firestone** (firestoneapp.com), used with permission. Deck codes from `hs meta decks` can be piped into `hs deck <code>`.
+
 ## Scope (Phase 1)
 
 - ✅ Deck code decoding (offline-capable after first fetch)
 - ✅ Card lookup + search with class/cost filters
 - ✅ Game metadata (sets, classes, types, rarities)
+- ✅ Live meta stats: archetype win rates, tiers, deck codes (Firestone)
 - ❌ Match history / win rate (Phase 2 — requires Power.log parsing)
 - ❌ "My saved decks" (Blizzard API has no Hearthstone profile endpoint — no workaround exists)
 
