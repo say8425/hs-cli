@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/say8425/hs-cli/compare/v0.5.0...v0.6.0) (2026-05-31)
+
+
+### Features
+
+* hs meta archetypes/decks — live win-rate/tier/deck-code (Firestone) ([#19](https://github.com/say8425/hs-cli/issues/19)) ([c99f3ef](https://github.com/say8425/hs-cli/commit/c99f3efba07ec40fc67e7f041c10414ed7b0316a))
+
 ## [0.5.0](https://github.com/say8425/hs-cli/compare/v0.4.1...v0.5.0) (2026-05-29)
 
 

@@ -2,7 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-plugin.json",
   "name": "hs-cli",
   "description": "Hearthstone deck decoder, card search, and metadata queries via the `hs` CLI. Requires the hs binary on PATH (install via Bun: see README).",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "author": {
     "name": "say8425"
   },
